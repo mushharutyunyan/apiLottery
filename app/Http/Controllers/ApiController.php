@@ -18,10 +18,10 @@ class ApiController extends Controller
             $now = date('Y-m-d H:i:s');
             if(Jackpot::where('provider',$provider)->where('date','>',$now)->count()){
                 $jackpot = Jackpot::where('provider',$provider)->where('date','>',$now)->first();
-                $countdown = $this->countdown($jackpot->date);
+//                $countdown = $this->countdown($jackpot->date);
                 $data[] = array('n' => $jackpot->provider,
                                 'p' => $jackpot->prize,
-                                'd' => $countdown);
+                                'd' => date("F m, Y G:i:s",strtotime($jackpot->date)));
                 continue;
             }
             $crawler = $client->request('GET', $link);
@@ -32,13 +32,13 @@ class ApiController extends Controller
 
 
             $prize = $crawler->filter('.lotto-prize')->text();
-            $countdown = $this->countdown($date);
+//            $countdown = $this->countdown($date);
             $data[] = array('n' => $provider,
                             'p' => $prize,
                             'd' => $countdown);
             Jackpot::create(array('provider' => $provider,
                                   'prize' => $prize,
-                                  'date' => date('Y-m-d H:i:s', date("H:i:s",strtotime($date) - strtotime(date("Y-m-d H:i:s"))))));
+                                  'date' => date("F m, Y G:i:s",strtotime($date)));
         }
         return response()->json($data);
     }
