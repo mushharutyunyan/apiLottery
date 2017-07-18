@@ -11,6 +11,10 @@
 |
 */
 
+Route::group(['prefix' => 'jackpot'],function () {
+    Route::get('/','ApiController@jackpot');
+});
+
 Route::get('/', function () {
     return view('welcome');
 });
