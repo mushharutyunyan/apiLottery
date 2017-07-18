@@ -18,9 +18,10 @@ class ApiController extends Controller
             $now = date('Y-m-d H:i:s');
             if(Jackpot::where('provider',$provider)->where('date','>',$now)->count()){
                 $jackpot = Jackpot::where('provider',$provider)->where('date','>',$now)->first();
+                $countdown = $this->countdown($jackpot->date);
                 $data[] = array('n' => $jackpot->provider,
                                 'p' => $jackpot->prize,
-                                'd' => date("H:i:s",strtotime($jackpot->date) - strtotime(date("Y-m-d H:i:s"))));
+                                'd' => $countdown);
                 continue;
             }
             $crawler = $client->request('GET', $link);
@@ -28,10 +29,13 @@ class ApiController extends Controller
             $current_link = $current_jackpot->filter('a')->attr('href');
             $crawler = $client->request('GET', 'https://www.lotto.net'.$current_link);
             $date = $crawler->filter('#dLottoSingleLineContainer')->attr('data-brand-draw-date');
+
+
             $prize = $crawler->filter('.lotto-prize')->text();
+            $countdown = $this->countdown($date);
             $data[] = array('n' => $provider,
                             'p' => $prize,
-                            'd' => strtotime(date('Y-m-d H:i:s',strtotime($date))));
+                            'd' => $countdown);
             Jackpot::create(array('provider' => $provider,
                                   'prize' => $prize,
                                   'date' => date('Y-m-d H:i:s', date("H:i:s",strtotime($date) - strtotime(date("Y-m-d H:i:s"))))));
@@ -41,5 +45,18 @@ class ApiController extends Controller
 
     public function datetime(){
         echo date("Y-m-d H:i:s");
+    }
+
+    private function countdown($date){
+        // Create two new DateTime-objects...
+        $date1 = new \DateTime(date("c",strtotime($date)));
+        $date2 = new \DateTime(date("c",time()));
+
+        $diff = $date2->diff($date1);
+        $hour = $diff->format('%a')*24 + $diff->format('%h');
+        $minutes = $diff->format('%i');
+        $seconds = $diff->format('%s');
+        $countdown = $hour .":".$minutes. ":". $seconds;
+        return $countdown;
     }
 }
