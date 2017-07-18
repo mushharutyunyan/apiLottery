@@ -38,4 +38,8 @@ class ApiController extends Controller
         }
         return response()->json($data);
     }
+
+    public function datetime(){
+        echo date("Y-m-d H:i:s");
+    }
 }

@@ -11,6 +11,7 @@
 |
 */
 
+Route::get('/datetime','ApiController@datetime');
 Route::group(['prefix' => 'jackpot'],function () {
     Route::get('/','ApiController@jackpot');
 });
