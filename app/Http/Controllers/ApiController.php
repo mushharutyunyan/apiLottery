@@ -20,7 +20,7 @@ class ApiController extends Controller
                 $jackpot = Jackpot::where('provider',$provider)->where('date','>',$now)->first();
                 $data[] = array('n' => $jackpot->provider,
                                 'p' => $jackpot->prize,
-                                'd' => strtotime($jackpot->date));
+                                'd' => date("H:i:s",strtotime($jackpot->date) - strtotime(date("Y-m-d H:i:s"))));
                 continue;
             }
             $crawler = $client->request('GET', $link);
@@ -34,7 +34,7 @@ class ApiController extends Controller
                             'd' => strtotime(date('Y-m-d H:i:s',strtotime($date))));
             Jackpot::create(array('provider' => $provider,
                                   'prize' => $prize,
-                                  'date' => date('Y-m-d H:i:s',strtotime($date))));
+                                  'date' => date('Y-m-d H:i:s', date("H:i:s",strtotime($date) - strtotime(date("Y-m-d H:i:s"))))));
         }
         return response()->json($data);
     }
