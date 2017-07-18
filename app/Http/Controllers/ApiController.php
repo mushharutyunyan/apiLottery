@@ -38,7 +38,7 @@ class ApiController extends Controller
                             'd' => date("F m, Y G:i:s",strtotime($date)));
             Jackpot::create(array('provider' => $provider,
                                   'prize' => $prize,
-                                  'date' => date('Y-m-d H:i:s', strtotime($date)));
+                                  'date' => date('Y-m-d H:i:s', strtotime($date))));
         }
         return response()->json($data);
     }
