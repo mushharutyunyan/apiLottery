@@ -31,7 +31,7 @@ class ApiController extends Controller
             $prize = $crawler->filter('.lotto-prize')->text();
             $data[] = array('n' => $provider,
                             'p' => $prize,
-                            'd' => date('Y-m-d H:i:s',strtotime($date)));
+                            'd' => strtotime(date('Y-m-d H:i:s',strtotime($date))));
             Jackpot::create(array('provider' => $provider,
                                   'prize' => $prize,
                                   'date' => date('Y-m-d H:i:s',strtotime($date))));
