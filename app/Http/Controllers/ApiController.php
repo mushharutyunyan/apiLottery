@@ -21,7 +21,7 @@ class ApiController extends Controller
 //                $countdown = $this->countdown($jackpot->date);
                 $data[] = array('n' => $jackpot->provider,
                                 'p' => $jackpot->prize,
-                                'd' => date("F m, Y G:i:s",strtotime($jackpot->date)));
+                                'd' => date("F d, Y G:i:s",strtotime($jackpot->date)));
                 continue;
             }
             $crawler = $client->request('GET', $link);
@@ -35,7 +35,7 @@ class ApiController extends Controller
 //            $countdown = $this->countdown($date);
             $data[] = array('n' => $provider,
                             'p' => $prize,
-                            'd' => date("F m, Y G:i:s",strtotime($date)));
+                            'd' => date("F d, Y G:i:s",strtotime($date)));
             Jackpot::create(array('provider' => $provider,
                                   'prize' => $prize,
                                   'date' => date('Y-m-d H:i:s', strtotime($date))));
