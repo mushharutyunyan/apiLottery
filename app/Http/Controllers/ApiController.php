@@ -66,6 +66,7 @@ class ApiController extends Controller
         if(!$info['class']::where('date',$date)->count()){
             $balls = $this->resultBalls($last_jackpot);
             $balls['date'] = $date;
+            $balls['prize'] = $last_jackpot->filter('.jackpot')->filter('span')->text();
             $data[$j] = $balls;
             ++$j;
             $jackpots = $crawler->filter('.results-med')->each(function ($node) {
@@ -73,6 +74,7 @@ class ApiController extends Controller
                 $date = date("Y-m-d",strtotime($date));
                 $balls = $this->resultBalls($node);
                 $balls['date'] = $date;
+                $balls['prize'] = $node->filter('.jackpot')->filter('span')->text();
                 return $balls;
             });
             foreach ($jackpots as $jackpot){
@@ -87,14 +89,17 @@ class ApiController extends Controller
                     $info['class']::create(array(
                         'numbers' => $value['numbers'],
                         'lotto_xtra' => $value['lotto_xtra'],
-                        'date' => $value['date']
+                        'date' => $value['date'],
+                        'prize' => $value['prize'],
                     ));
                 }else{
                 $info['class']::create(array(
                         'numbers' => $value['numbers'],
                         'jolly' => $value['jolly'],
                         'superstar' => $value['superstar'],
-                        'date' => $value['date']
+                        'date' => $value['date'],
+                        'prize' => $value['prize'],
+
                     ));
                 }
             }
@@ -106,14 +111,16 @@ class ApiController extends Controller
                 $result[] = array(
                   'draw_date' => $value->date,
                   'lottoxtra' => $value->lotto_xtra,
-                  'winning_numbers' => $value->numbers
+                  'winning_numbers' => $value->numbers,
+                  'prize' => $value->prize
                 );
             }else{
                 $result[] = array(
                     'draw_date' => $value->date,
                     'jolly' => $value->jolly,
                     'superstar' => $value->superstar,
-                    'winning_numbers' => $value->numbers
+                    'winning_numbers' => $value->numbers,
+                    'prize' => $value->prize
                 );
             }
         }
