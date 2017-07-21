@@ -49,6 +49,7 @@ class ApiController extends Controller
         $providers = array( 'superenalotto' => 'https://www.lotto.net/superenalotto/results',
                             'floridalotto' => 'https://www.lotto.net/florida-lotto/numbers');
         $other_balls = array('jolly','superstar');
+        $j = 0;
         foreach($providers as $provider => $link){
             $crawler = $client->request('GET', $link);
             $last_jackpot = $crawler->filter('.results-big');
@@ -71,6 +72,7 @@ class ApiController extends Controller
             $superstar = '';
             $lotto_xtra = '';
             $i = 0;
+
             foreach($balls as $key => $ball){
                 foreach($ball as $keyNumber => $ballValue){
                     if($keyNumber == 'ball'){
@@ -111,14 +113,19 @@ class ApiController extends Controller
                     'numbers' => $numbers
                 ));
             }
-            $data[] = array(
-                'provider' => $provider,
-                'date' => $date,
-                'jolly' => $jolly,
-                'superstar' => $superstar,
-                'lotto_xtra' => $lotto_xtra,
-                'winning_numbers' => $numbers
-            );
+            $data[$j]['provider'] = $provider;
+            $data[$j]['date'] = $date;
+            if(!empty($jolly)){
+                $data[$j]['jolly'] = $jolly;
+            }
+            if(!empty($superstar)){
+                $data[$j]['superstar'] = $superstar;
+            }
+            if(!empty($lotto_xtra)){
+                $data[$j]['lotto_xtra'] = $lotto_xtra;
+            }
+            $data[$j]['winning_numbers'] = $numbers;
+            $j++;
         }
         return response()->json($data);
     }
