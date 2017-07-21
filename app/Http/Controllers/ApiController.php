@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Goutte\Client;
 use App\Models\Jackpot;
+use App\Models\Result;
 class ApiController extends Controller
 {
     protected $providers = array('PowerBall' => 'https://www.lotto.net/powerball/numbers',
@@ -43,8 +44,83 @@ class ApiController extends Controller
         return response()->json($data);
     }
 
-    public function datetime(){
-        echo date("Y-m-d H:i:s");
+    public function results(){
+        $client = new Client();
+        $providers = array( 'superenalotto' => 'https://www.lotto.net/superenalotto/results',
+                            'floridalotto' => 'https://www.lotto.net/florida-lotto/numbers');
+        $other_balls = array('jolly','superstar');
+        foreach($providers as $provider => $link){
+            $crawler = $client->request('GET', $link);
+            $last_jackpot = $crawler->filter('.results-big');
+            $date = $last_jackpot->filter('.date')->text();
+            $balls = $last_jackpot->filter('.balls')->children('.ball')->each(function ($node) {
+                if(preg_match('/jolly/',$node->attr('class'))){
+                    $balls['jolly'] = $node->filter('span')->text();
+                }elseif(preg_match('/superstar/',$node->attr('class'))){
+                    $balls['superstar'] = $node->filter('span')->text();
+                }elseif(preg_match('/lotto-xtra/',$node->attr('class'))){
+                    $balls['lotto_xtra'] = $node->filter('span')->text();
+                }else{
+                    $balls['ball'] = $node->filter('span')->text();
+                }
+                return $balls;
+            });
+            $date = date("Y-m-d",strtotime($date));
+            $numbers = '';
+            $jolly = '';
+            $superstar = '';
+            $lotto_xtra = '';
+            $i = 0;
+            foreach($balls as $key => $ball){
+                foreach($ball as $keyNumber => $ballValue){
+                    if($keyNumber == 'ball'){
+                        if($i == 0){
+                            $numbers .= $ballValue;
+                        }else{
+                            $numbers .= " ".$ballValue;
+                        }
+                    }elseif ($keyNumber == 'jolly'){
+                        if(!empty($jolly)){
+                            $jolly .= " ".$ballValue;
+                        }else{
+                            $jolly .= $ballValue;
+                        }
+                    }elseif ($keyNumber == 'superstar'){
+                        if(!empty($superstar)){
+                            $superstar .= " ".$ballValue;
+                        }else{
+                            $superstar .= $ballValue;
+                        }
+                    }elseif ($keyNumber == 'lotto_xtra'){
+                        if(!empty($lotto_extra)){
+                            $lotto_xtra .= " ".$ballValue;
+                        }else{
+                            $lotto_xtra .= $ballValue;
+                        }
+                    }
+                    $i++;
+                }
+            }
+            if(!Result::where('provider',$provider)->where('date',$date)->count()){
+                Result::create(array(
+                    'provider' => $provider,
+                    'date' => $date,
+                    'jolly' => $jolly,
+                    'superstar' => $superstar,
+                    'lotto_xtra' => $lotto_xtra,
+                    'numbers' => $numbers
+                ));
+            }
+            $data[] = array(
+                'provider' => $provider,
+                'date' => $date,
+                'jolly' => $jolly,
+                'superstar' => $superstar,
+                'lotto_xtra' => $lotto_xtra,
+                'numbers' => $numbers
+            );
+        }
+        return response()->json($data);
     }
 
     private function countdown($date){
