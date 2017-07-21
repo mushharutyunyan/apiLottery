@@ -117,7 +117,7 @@ class ApiController extends Controller
                 'jolly' => $jolly,
                 'superstar' => $superstar,
                 'lotto_xtra' => $lotto_xtra,
-                'numbers' => $numbers
+                'winning_numbers' => $numbers
             );
         }
         return response()->json($data);
