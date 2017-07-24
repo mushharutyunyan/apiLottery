@@ -20,7 +20,10 @@ class ApiController extends Controller
          'OzLotto' => 'https://www.lotto.net/oz-lotto/results',
          'U.K.Lotto' => 'https://www.lotto.net/uk-lotto/results',
          'Lotto649' => 'https://www.lotto.net/canada-lotto-6-49/numbers',
-         'AustraliaPowerBall' => 'https://www.lotto.net/australia-powerball/results'
+         'AustraliaPowerBall' => 'https://www.lotto.net/australia-powerball/results',
+        'LaPrimitiva' => 'https://www.thelotter.com/lottery-tickets/spain-la-primitiva/?player=0',
+        'ElGordo' => 'https://www.thelotter.com/lottery-tickets/spain-el-gordo/?player=0',
+        'BonoLoto' => 'https://www.thelotter.com/lottery-tickets/spain-bonoloto/?player=0'
     );
 
     public function jackpot(){
@@ -37,10 +40,14 @@ class ApiController extends Controller
                 continue;
             }
             $crawler = $client->request('GET', $link);
-            $current_jackpot = $crawler->filter('.sidebar-right')->children('.current');
-            $current_link = $current_jackpot->filter('a')->attr('href');
-            $crawler = $client->request('GET', 'https://www.lotto.net'.$current_link);
-            if($crawler->filter('#dLottoSingleLineContainer')->count()){
+            if($crawler->filter('.sidebar-right')->count()){
+                $current_jackpot = $crawler->filter('.sidebar-right')->children('.current');
+                $current_link = 'https://www.lotto.net'.$current_jackpot->filter('a')->attr('href');
+            }else{
+                $current_link = $link;
+            }
+            $crawler = $client->request('GET', $current_link);
+            if($crawler->filter('.sidebar-right')->count()){
                 $date = $crawler->filter('#dLottoSingleLineContainer')->attr('data-brand-draw-date');
                 $prize = $crawler->filter('.lotto-prize')->text();
             }else{
