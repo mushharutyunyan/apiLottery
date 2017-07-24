@@ -7,10 +7,16 @@ use Goutte\Client;
 use App\Models\Jackpot;
 use App\Models\SuperenaLotto;
 use App\Models\FloridaLotto;
+use App\Models\PowerBall;
+use App\Models\OzLotto;
+use App\Models\EuroJackpot;
+use App\Models\UKLotto;
+use App\Models\Lotto649;
+use App\Models\AustraliaPowerball;
 class ApiController extends Controller
 {
 
-
+    protected $alter_fields = '';
     public function jackpot(){
         $now = date('Y-m-d H:i:s');
         $providers = Jackpot::$providers;
@@ -26,14 +32,71 @@ class ApiController extends Controller
 
     public function results($provider){
         $client = new Client();
+        $response_fields = array(
+            'date' => 'draw_date',
+            'prize' => 'prize',
+            'numbers' => 'winning_numbers'
+        );
         $providers = array(
             'superenalotto' => array(
                 'link' => 'https://www.lotto.net/superenalotto/results',
-                'class' => SuperenaLotto::class
+                'class' => SuperenaLotto::class,
+                'alter_fields' => array(
+                    'jolly' => 'jolly',
+                    'superstar' => 'superstar'
+                )
             ),
             'floridalotto' => array(
                 'link' => 'https://www.lotto.net/florida-lotto/numbers',
-                'class' => FloridaLotto::class
+                'class' => FloridaLotto::class,
+                'alter_fields' => array(
+                    'lotto_xtra' => 'lotto-xtra'
+                )
+            ),
+            'powerball' => array(
+                'link' => 'https://www.lotto.net/powerball/numbers',
+                'class' => PowerBall::class,
+                'alter_fields' => array(
+                    'powerball' => 'powerball',
+                    'powerplay' => 'power-play'
+                )
+            ),
+            'ozlotto' => array(
+                'link' => 'https://www.lotto.net/oz-lotto/results',
+                'class' => OzLotto::class,
+                'alter_fields' => array(
+                    'supp' => 'supplementary',
+                    'supp2' => 'supplementary'
+                )
+            ),
+            'eurojackpot' => array(
+                'link' => 'https://www.lotto.net/eurojackpot/results',
+                'class' => EuroJackpot::class,
+                'alter_fields' => array(
+                    'euro' => 'euro',
+                    'euro2' => 'euro'
+                )
+            ),
+            'uklotto' => array(
+                'link' => 'https://www.lotto.net/uk-lotto/results',
+                'class' => UKLotto::class,
+                'alter_fields' => array(
+                    'bonus' => 'bonus-ball',
+                )
+            ),
+            'lotto649' => array(
+                'link' => 'https://www.lotto.net/canada-lotto-6-49/numbers',
+                'class' => Lotto649::class,
+                'alter_fields' => array(
+                    'bonus' => 'bonus-ball',
+                )
+            ),
+            'australiapowerball' => array(
+                'link' => 'https://www.lotto.net/australia-powerball/results',
+                'class' => AustraliaPowerball::class,
+                'alter_fields' => array(
+                    'powerball' => 'powerball',
+                )
             )
         );
         $j = 0;
@@ -42,10 +105,11 @@ class ApiController extends Controller
         $last_jackpot = $crawler->filter('.results-big');
         $date = $last_jackpot->filter('.date')->text();
         $date = date("Y-m-d",strtotime($date));
+        $this->alter_fields = $providers[$provider]['alter_fields'];
         if(!$info['class']::where('date',$date)->count()){
             $balls = $this->resultBalls($last_jackpot);
             $balls['date'] = $date;
-            $balls['prize'] = $last_jackpot->filter('.jackpot')->filter('span')->text();
+            $balls['prize'] = trim($last_jackpot->filter('.jackpot')->filter('span')->text());
             $data[$j] = $balls;
             ++$j;
             $jackpots = $crawler->filter('.results-med')->each(function ($node) {
@@ -53,7 +117,7 @@ class ApiController extends Controller
                 $date = date("Y-m-d",strtotime($date));
                 $balls = $this->resultBalls($node);
                 $balls['date'] = $date;
-                $balls['prize'] = $node->filter('.jackpot')->filter('span')->text();
+                $balls['prize'] = trim($node->filter('.jackpot')->filter('span')->text());
                 return $balls;
             });
             foreach ($jackpots as $jackpot){
@@ -63,98 +127,69 @@ class ApiController extends Controller
                 $data[$j] = $jackpot;
                 $j++;
             }
-            foreach ($data as $value){
-                if(!empty($value['lotto_xtra'])){
-                    $info['class']::create(array(
-                        'numbers' => $value['numbers'],
-                        'lotto_xtra' => $value['lotto_xtra'],
-                        'date' => $value['date'],
-                        'prize' => $value['prize'],
-                    ));
-                }else{
-                $info['class']::create(array(
-                        'numbers' => $value['numbers'],
-                        'jolly' => $value['jolly'],
-                        'superstar' => $value['superstar'],
-                        'date' => $value['date'],
-                        'prize' => $value['prize'],
-
-                    ));
-                }
+            foreach ($data as $key => $data_value){
+                $info['class']::create($data_value);
             }
         }
         $data = $info['class']::orderBy('date','DESC')->take(10)->get();
         $result = array();
-        foreach($data as $value){
-            if(isset($value->lotto_xtra)){
-                $result[] = array(
-                  'draw_date' => $value->date,
-                  'lottoxtra' => $value->lotto_xtra,
-                  'winning_numbers' => $value->numbers,
-                  'prize' => $value->prize
-                );
-            }else{
-                $result[] = array(
-                    'draw_date' => $value->date,
-                    'jolly' => $value->jolly,
-                    'superstar' => $value->superstar,
-                    'winning_numbers' => $value->numbers,
-                    'prize' => $value->prize
-                );
+        $i = 0;
+        foreach($data as $key => $value){
+            foreach($response_fields as $db_field => $response_field){
+                $result[$i][$response_field] = $value->$db_field;
             }
+            foreach ($this->alter_fields as $field => $class){
+                $result[$i][$field] = $value->$field;
+            }
+            $i++;
         }
         return response()->json($result);
     }
     
     private function resultBalls($jackpot_block){
         $balls = $jackpot_block->filter('.balls')->children('.ball')->each(function ($node) {
-            if(preg_match('/jolly/',$node->attr('class'))){
-                $balls['jolly'] = $node->filter('span')->text();
-            }elseif(preg_match('/superstar/',$node->attr('class'))){
-                $balls['superstar'] = $node->filter('span')->text();
-            }elseif(preg_match('/lotto-xtra/',$node->attr('class'))){
-                $balls['lotto_xtra'] = $node->filter('span')->text();
-            }else{
+            $balls = array();
+            $same_classes = array();
+            foreach($this->alter_fields as $field => $class){
+                if(!in_array($class,$same_classes)){
+                    if(preg_match('/'.$class.'/',$node->attr('class'))){
+                        $balls[$field] = $node->filter('span')->text();
+                        $same_classes[] = $class;
+                    }
+                }
+            }
+            if(empty($balls)){
                 $balls['ball'] = $node->filter('span')->text();
             }
             return $balls;
         });
-        $numbers = '';
-        $jolly = '';
-        $superstar = '';
-        $lotto_xtra = '';
         $i = 0;
+        $numbers = array('numbers' => '');
         foreach($balls as $key => $ball){
             foreach($ball as $keyNumber => $ballValue){
                 if($keyNumber == 'ball'){
                     if($i == 0){
-                        $numbers .= $ballValue;
+                        $numbers['numbers'] .= $ballValue;
                     }else{
-                        $numbers .= " ".$ballValue;
+                        $numbers['numbers'] .= " ".$ballValue;
                     }
-                }elseif ($keyNumber == 'jolly'){
-                    if(!empty($jolly)){
-                        $jolly .= " ".$ballValue;
-                    }else{
-                        $jolly .= $ballValue;
-                    }
-                }elseif ($keyNumber == 'superstar'){
-                    if(!empty($superstar)){
-                        $superstar .= " ".$ballValue;
-                    }else{
-                        $superstar .= $ballValue;
-                    }
-                }elseif ($keyNumber == 'lotto_xtra'){
-                    if(!empty($lotto_extra)){
-                        $lotto_xtra .= " ".$ballValue;
-                    }else{
-                        $lotto_xtra .= $ballValue;
+                }else{
+                    foreach($this->alter_fields as $field => $class){
+                        if($keyNumber == $field){
+                            if(!empty($numbers[$keyNumber])){
+                                $numbers[$keyNumber."2"] = $ballValue;
+                                continue;
+                            }else{
+                                $numbers[$keyNumber] = $ballValue;
+                                break;
+                            }
+                        }
                     }
                 }
                 $i++;
             }
         }
-        return array('numbers' => $numbers, 'jolly' => $jolly, 'superstar' => $superstar, 'lotto_xtra' => $lotto_xtra);
+        return $numbers;
     }
     
     private function countdown($date){
