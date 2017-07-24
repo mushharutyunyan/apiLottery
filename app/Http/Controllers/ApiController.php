@@ -9,81 +9,17 @@ use App\Models\SuperenaLotto;
 use App\Models\FloridaLotto;
 class ApiController extends Controller
 {
-    protected $providers = array(
-        'PowerBall' => 'https://www.lotto.net/powerball/numbers',
-         'MegaMillions' => 'https://www.lotto.net/mega-millions/numbers',
-         'EuroMillions' => 'https://www.lotto.net/euromillions/results',
-         'SuperEnaLotto' => 'https://www.lotto.net/superenalotto/results',
-         'EuroJackpot' => 'https://www.lotto.net/eurojackpot/results',
-         'FloridaLotto' => 'https://www.lotto.net/florida-lotto/numbers',
-         'CaliforniaSuperLotto' => 'https://www.lotto.net/california-super-lotto-plus/numbers',
-         'OzLotto' => 'https://www.lotto.net/oz-lotto/results',
-         'U.K.Lotto' => 'https://www.lotto.net/uk-lotto/results',
-         'Lotto649' => 'https://www.lotto.net/canada-lotto-6-49/numbers',
-         'AustraliaPowerBall' => 'https://www.lotto.net/australia-powerball/results',
-        'LaPrimitiva' => 'https://www.thelotter.com/lottery-tickets/spain-la-primitiva/?player=0',
-        'ElGordo' => 'https://www.thelotter.com/lottery-tickets/spain-el-gordo/?player=0',
-        'BonoLoto' => 'https://www.thelotter.com/lottery-tickets/spain-bonoloto/?player=0'
-    );
+
 
     public function jackpot(){
-        $client = new Client();
-        $data = [];
-        foreach($this->providers as $provider => $link){
-            $now = date('Y-m-d H:i:s');
-            if(Jackpot::where('provider',$provider)->where('date','>',$now)->count()){
-                $jackpot = Jackpot::where('provider',$provider)->where('date','>',$now)->first();
+        $now = date('Y-m-d H:i:s');
+        $providers = Jackpot::$providers;
+        foreach($providers as $provider => $link) {
+            $jackpot = Jackpot::where('provider', $provider)->where('date', '>', $now)->first();
 //                $countdown = $this->countdown($jackpot->date);
-                $data[] = array('n' => $jackpot->provider,
-                                'p' => $jackpot->prize,
-                                'd' => date("F d, Y G:i:s",strtotime($jackpot->date . "+3 hours")));
-                continue;
-            }
-            $crawler = $client->request('GET', $link);
-            if($crawler->filter('.sidebar-right')->count()){
-                $current_jackpot = $crawler->filter('.sidebar-right')->children('.current');
-                $current_link = 'https://www.lotto.net'.$current_jackpot->filter('a')->attr('href');
-            }else{
-                $current_link = $link;
-            }
-            $crawler = $client->request('GET', $current_link);
-            if($crawler->filter('.sidebar-right')->count()){
-                $date = $crawler->filter('#dLottoSingleLineContainer')->attr('data-brand-draw-date');
-                $prize = $crawler->filter('.lotto-prize')->text();
-            }else{
-                $canonical_source_content = $crawler->filter('meta[name="canonical_source"]')->attr('content');
-                $lotteryId = explode('?lotteryid=',$canonical_source_content)[1];
-                $data_string = json_encode(array(
-                    'formType' => 0,
-                    'lotteryId' => $lotteryId,
-                    'lotteryType' => 0,
-                    'numberOfLines' => 0
-                ));
-                $ch = curl_init('https://www.thelotter.com/__ajax/__play.asmx/getplaymodel');
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-                curl_setopt($ch, CURLOPT_BINARYTRANSFER, false); // --data-binary
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                        'Content-Type: application/json;charset=UTF-8',
-                        'accept-language: en-US,en;q=0.8')
-                );
-                curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0); // -0
-
-                $result = curl_exec($ch);
-                $result_data = json_decode($result);
-                $drawData = $result_data->d->State->DrawData;
-                $date = date('Y-m-d H:i:s',strtotime('+'.$drawData->secondsBeforeClose." seconds"));
-                $prize_data = explode(" ",$drawData->jackpotText);
-                $prize = $prize_data[0].$this->convertPrize(str_replace(",","",$prize_data[1]));
-            }
-
-            $data[] = array('n' => $provider,
-                            'p' => $prize,
-                            'd' => date("F d, Y G:i:s",strtotime($date . "+3 hours")));
-            Jackpot::create(array('provider' => $provider,
-                                  'prize' => $prize,
-                                  'date' => date('Y-m-d H:i:s', strtotime($date))));
+            $data[] = array('n' => $jackpot->provider,
+                'p' => $jackpot->prize,
+                'd' => date("F d, Y G:i:s", strtotime($jackpot->date . "+3 hours")));
         }
         return response()->json($data);
     }
@@ -234,12 +170,5 @@ class ApiController extends Controller
         return $countdown;
     }
 
-    private function convertPrize($n){
-        if($n>1000000000000) return round(($n/1000000000000),1).'T';
-        else if($n>1000000000) return round(($n/1000000000),1).'B';
-        else if($n>1000000) return round(($n/1000000),1).'M';
-        else if($n>1000) return round(($n/1000),1);
 
-        return number_format($n);
-    }
 }
