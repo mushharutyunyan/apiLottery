@@ -213,7 +213,7 @@ class ApiController extends Controller
                                     $prize += (double)trim($prizes);
                                 }
                             }
-                            $prize = "&euro;".number_format($prize,2,".",",");
+                            $prize = "€".number_format($prize,2,".",",");
                             $balls['date'] = $date;
                             $balls['prize'] = $prize;
                             $results[] = $balls;
