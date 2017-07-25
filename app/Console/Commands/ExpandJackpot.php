@@ -99,10 +99,19 @@ class ExpandJackpot extends Command
                     $prize = $this->currencies[$prize_data[0]].$this->convertPrize(str_replace(",","",$prize_data[1]));
                 }
             }
-            Log::info('Expand jackpot insert row (provider - '.$provider.' , prize - '.$prize.')');
-            Jackpot::create(array('provider' => $provider,
-                'prize' => $prize,
-                'date' => date('Y-m-d H:i:s', strtotime($date))));
+            if(Jackpot::where('provider',$provider)->where('date',$date)->where('prize','=','Not Published')->count()){
+                $old_jackpot = Jackpot::where('provider',$provider)->where('date',$date)->where('prize','=','Not Published')->first();
+                Log::info('Expand jackpot update row (provider - '.$provider.' , prize - '.$prize.')');
+                Jackpot::where('id',$old_jackpot->id)->update(array(
+                    'prize' => $prize,
+                    'date' => date('Y-m-d H:i:s', strtotime($date)))
+                );
+            }else{
+                Log::info('Expand jackpot insert row (provider - '.$provider.' , prize - '.$prize.')');
+                Jackpot::create(array('provider' => $provider,
+                    'prize' => $prize,
+                    'date' => date('Y-m-d H:i:s', strtotime($date))));
+            }
         }
         Log::info('Expand jackpot command end '.date("Y-m-d H:i:s"));
     }
