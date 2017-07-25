@@ -101,13 +101,13 @@ class ExpandJackpot extends Command
             }
             if(Jackpot::where('provider',$provider)->where('date',$date)->where('prize','=','Not Published')->count()){
                 $old_jackpot = Jackpot::where('provider',$provider)->where('date',$date)->where('prize','=','Not Published')->first();
-                Log::info('Expand jackpot update row (provider - '.$provider.' , prize - '.$prize.')');
+                Log::info('Expand jackpot update row (provider - '.$provider.' , prize - '.$prize.') date - '.date('Y-m-d H:i:s'));
                 Jackpot::where('id',$old_jackpot->id)->update(array(
                     'prize' => $prize,
                     'date' => date('Y-m-d H:i:s', strtotime($date)))
                 );
             }else{
-                Log::info('Expand jackpot insert row (provider - '.$provider.' , prize - '.$prize.')');
+                Log::info('Expand jackpot insert row (provider - '.$provider.' , prize - '.$prize.') date - '.date('Y-m-d H:i:s'));
                 Jackpot::create(array('provider' => $provider,
                     'prize' => $prize,
                     'date' => date('Y-m-d H:i:s', strtotime($date))));
