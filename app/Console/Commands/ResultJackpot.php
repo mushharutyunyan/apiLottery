@@ -16,6 +16,7 @@ use App\Models\LaPrimitiva;
 use App\Models\ElGordo;
 use App\Models\BonoLotto;
 use Symfony\Component\DomCrawler\Crawler;
+use Log;
 class ResultJackpot extends Command
 {
     /**
