@@ -116,6 +116,13 @@ class ApiController extends Controller
                 'alter_fields' => array(
                     'extra_number' => 'results-ball-additional',
                 )
+            ),
+            'bonolotto' => array(
+                'link' => 'https://www.thelotter.com/lottery-results/spain-bonoloto/',
+                'class' => ElGordo::class,
+                'alter_fields' => array(
+                    'extra_number' => 'results-ball-bonus',
+                )
             )
         );
         $j = 0;
@@ -145,10 +152,7 @@ class ApiController extends Controller
                 $this->dataInsertResults($jackpots);
             }
         }else{
-            if($provider == 'laprimitiva' || $provider == 'elgordo'){
-                $this->laprimitiva_elgordo($crawler);
-            }
-
+            $this->spanish_lotto($crawler);
         }
 
         $data = $info['class']::orderBy('date','DESC')->take(10)->get();
@@ -166,7 +170,7 @@ class ApiController extends Controller
         return response()->json($result);
     }
 
-    private function laprimitiva_elgordo($crawler){
+    private function spanish_lotto($crawler){
         $jackpots = $crawler->filter('script')->each(function ($node) {
             if(!empty($node->text())){
                 if(preg_match('/TL.tlGlobals/',$node->text())){
