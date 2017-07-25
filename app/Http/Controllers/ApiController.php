@@ -13,15 +13,18 @@ use App\Models\EuroJackpot;
 use App\Models\UKLotto;
 use App\Models\Lotto649;
 use App\Models\AustraliaPowerball;
+use Symfony\Component\DomCrawler\Crawler;
 class ApiController extends Controller
 {
 
     protected $alter_fields = '';
+    protected $client;
+    protected $provider;
     public function jackpot(){
         $now = date('Y-m-d H:i:s');
         $providers = Jackpot::$providers;
         foreach($providers as $provider => $link) {
-            $jackpot = Jackpot::where('provider', $provider)->where('date', '>', $now)->first();
+            $jackpot = Jackpot::where('provider', $provider)->orderBy('date', 'DESC')->first();
 //                $countdown = $this->countdown($jackpot->date);
             $data[] = array('n' => $jackpot->provider,
                 'p' => $jackpot->prize,
@@ -97,40 +100,48 @@ class ApiController extends Controller
                 'alter_fields' => array(
                     'powerball' => 'powerball',
                 )
+            ),
+            'laprimitiva' => array(
+                'link' => 'https://www.thelotter.com/lottery-results/spain-la-primitiva/',
+                'class' => AustraliaPowerball::class,
+                'alter_fields' => array(
+                    'bonus' => 'results-ball-bonus',
+                )
             )
         );
         $j = 0;
         $info = $providers[$provider];
         $crawler = $client->request('GET', $info['link']);
-        $last_jackpot = $crawler->filter('.results-big');
-        $date = $last_jackpot->filter('.date')->text();
-        $date = date("Y-m-d",strtotime($date));
         $this->alter_fields = $providers[$provider]['alter_fields'];
-        if(!$info['class']::where('date',$date)->count()){
-            $balls = $this->resultBalls($last_jackpot);
-            $balls['date'] = $date;
-            $balls['prize'] = trim($last_jackpot->filter('.jackpot')->filter('span')->text());
-            $data[$j] = $balls;
-            ++$j;
-            $jackpots = $crawler->filter('.results-med')->each(function ($node) {
-                $date = $node->filter('.date')->text();
-                $date = date("Y-m-d",strtotime($date));
-                $balls = $this->resultBalls($node);
+        if($crawler->filter('.results-big')->count()){
+            $last_jackpot = $crawler->filter('.results-big');
+            $date = $last_jackpot->filter('.date')->text();
+            $date = date("Y-m-d",strtotime($date));
+            if(!$info['class']::where('date',$date)->count()){
+                $balls = $this->resultBalls($last_jackpot->filter('.balls')->children('.ball'));
                 $balls['date'] = $date;
-                $balls['prize'] = trim($node->filter('.jackpot')->filter('span')->text());
-                return $balls;
-            });
-            foreach ($jackpots as $jackpot){
-                if($info['class']::where('date',$date)->count()){
-                    break;
-                }
-                $data[$j] = $jackpot;
-                $j++;
+                $balls['prize'] = trim($last_jackpot->filter('.jackpot')->filter('span')->text());
+                $data[$j] = $balls;
+                ++$j;
+                $jackpots = $crawler->filter('.results-med')->each(function ($node) {
+                    $date = $node->filter('.date')->text();
+                    $date = date("Y-m-d",strtotime($date));
+                    $balls = $this->resultBalls($node->filter('.balls')->children('.ball'));
+                    $balls['date'] = $date;
+                    $balls['prize'] = trim($node->filter('.jackpot')->filter('span')->text());
+                    return $balls;
+                });
+                $this->dataInsertResults($jackpots);
             }
-            foreach ($data as $key => $data_value){
-                $info['class']::create($data_value);
+        }else{
+            if($provider == 'laprimitiva'){
+                $this->client = $client;
+                $this->provider = $providers[$provider];
+                $this->laprimitiva($crawler);
             }
+
         }
+
         $data = $info['class']::orderBy('date','DESC')->take(10)->get();
         $result = array();
         $i = 0;
@@ -145,9 +156,53 @@ class ApiController extends Controller
         }
         return response()->json($result);
     }
-    
+
+    private function laprimitiva($crawler){
+        $jackpots = $crawler->filter('script')->each(function ($node) {
+            if(!empty($node->text())){
+                preg_match("/\((.*?)\)/s",$node->text(),$content);
+                $data_script = json_decode($content[1]);
+                $lotteryRef = $data_script->Params->lotteryRef;
+                $data_string = json_encode(array(
+                    'lotteryRef' => $lotteryRef
+                ));
+                $ch = curl_init('https://www.thelotter.com/__Ajax/__AsyncControls.asmx/GetDrawsValueNameList');
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                        'Content-Type: application/json;charset=UTF-8',
+                        'accept-language: en-US,en;q=0.8')
+                );
+                $result = curl_exec($ch);
+                $data_days = json_decode($result);
+                $data = array();
+                foreach($data_days->d as $key => $data){
+                    $date = date("Y-m-d",strtotime(trim(explode("|",$data->DisplayText)[1])));
+                    $crawler = $this->client->request('GET', $this->provider['link']."?DrawNumber=136231");
+                    $balls = $this->resultBalls($crawler->filter('.draw-result-item')->filter('.results-ball'));
+                    $crawler = new Crawler($crawler->text());
+                    $script_text = explode("new TheLotter\$JqGridControl",$crawler->text());
+                    preg_match("/\[(.*?)\]/s",explode('data : ',$script_text[1])[1],$content);
+                    $prize_json = str_replace("\r\n","",$content[0]);
+                    preg_match_all("/\'LocalWinningAmount\'\:(.*?)\,/s",$prize_json,$content);
+                    $prize = 0;
+                    foreach($content[1] as $prizes){
+                        if(is_numeric(trim($prizes))){
+                            $prize += $prizes;
+                        }
+                    }
+
+                    print_r(is_numeric($prize));die;
+                    preg_match("/\[(.*?)\]/s",explode("data :",$script_prizes)[1],$content);
+                    print_r(explode("data :",$script_prizes)[1]);die;
+                }
+            }
+        });
+    }
+
     private function resultBalls($jackpot_block){
-        $balls = $jackpot_block->filter('.balls')->children('.ball')->each(function ($node) {
+        $balls = $jackpot_block->each(function ($node) {
             $balls = array();
             $same_classes = array();
             foreach($this->alter_fields as $field => $class){
@@ -191,19 +246,24 @@ class ApiController extends Controller
         }
         return $numbers;
     }
-    
-    private function countdown($date){
-        // Create two new DateTime-objects...
-        $date1 = new \DateTime(date("c",strtotime($date)));
-        $date2 = new \DateTime(date("c",time()));
 
-        $diff = $date2->diff($date1);
-        $hour = $diff->format('%a')*24 + $diff->format('%h');
-        $minutes = $diff->format('%i');
-        $seconds = $diff->format('%s');
-        $countdown = $hour .":".$minutes. ":". $seconds;
-        return $countdown;
+
+
+    private function dataInsertResults($jackpots){
+        $j = 0;
+        foreach ($jackpots as $jackpot){
+            if($this->provider['class']::where('date',$jackpot->date)->count()){
+                break;
+            }
+            $data[$j] = $jackpot;
+            $j++;
+        }
+        foreach ($data as $key => $data_value){
+            $this->provider['class']::create($data_value);
+        }
     }
+
+
 
 
 }
