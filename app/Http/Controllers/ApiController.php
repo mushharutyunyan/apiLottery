@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LaPrimitiva;
 use Illuminate\Http\Request;
 use Goutte\Client;
 use App\Models\Jackpot;
@@ -103,9 +104,9 @@ class ApiController extends Controller
             ),
             'laprimitiva' => array(
                 'link' => 'https://www.thelotter.com/lottery-results/spain-la-primitiva/',
-                'class' => AustraliaPowerball::class,
+                'class' => LaPrimitiva::class,
                 'alter_fields' => array(
-                    'bonus' => 'results-ball-bonus',
+                    'extra_number' => 'results-ball-bonus',
                 )
             )
         );
@@ -113,6 +114,8 @@ class ApiController extends Controller
         $info = $providers[$provider];
         $crawler = $client->request('GET', $info['link']);
         $this->alter_fields = $providers[$provider]['alter_fields'];
+        $this->provider = $providers[$provider];
+        $this->client = $client;
         if($crawler->filter('.results-big')->count()){
             $last_jackpot = $crawler->filter('.results-big');
             $date = $last_jackpot->filter('.date')->text();
@@ -135,8 +138,6 @@ class ApiController extends Controller
             }
         }else{
             if($provider == 'laprimitiva'){
-                $this->client = $client;
-                $this->provider = $providers[$provider];
                 $this->laprimitiva($crawler);
             }
 
@@ -160,45 +161,67 @@ class ApiController extends Controller
     private function laprimitiva($crawler){
         $jackpots = $crawler->filter('script')->each(function ($node) {
             if(!empty($node->text())){
-                preg_match("/\((.*?)\)/s",$node->text(),$content);
-                $data_script = json_decode($content[1]);
-                $lotteryRef = $data_script->Params->lotteryRef;
-                $data_string = json_encode(array(
-                    'lotteryRef' => $lotteryRef
-                ));
-                $ch = curl_init('https://www.thelotter.com/__Ajax/__AsyncControls.asmx/GetDrawsValueNameList');
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                        'Content-Type: application/json;charset=UTF-8',
-                        'accept-language: en-US,en;q=0.8')
-                );
-                $result = curl_exec($ch);
-                $data_days = json_decode($result);
-                $data = array();
-                foreach($data_days->d as $key => $data){
-                    $date = date("Y-m-d",strtotime(trim(explode("|",$data->DisplayText)[1])));
-                    $crawler = $this->client->request('GET', $this->provider['link']."?DrawNumber=136231");
-                    $balls = $this->resultBalls($crawler->filter('.draw-result-item')->filter('.results-ball'));
-                    $crawler = new Crawler($crawler->text());
-                    $script_text = explode("new TheLotter\$JqGridControl",$crawler->text());
-                    preg_match("/\[(.*?)\]/s",explode('data : ',$script_text[1])[1],$content);
-                    $prize_json = str_replace("\r\n","",$content[0]);
-                    preg_match_all("/\'LocalWinningAmount\'\:(.*?)\,/s",$prize_json,$content);
-                    $prize = 0;
-                    foreach($content[1] as $prizes){
-                        if(is_numeric(trim($prizes))){
-                            $prize += $prizes;
-                        }
-                    }
+                if(preg_match('/TL.tlGlobals/',$node->text())){
+                    preg_match("/\((.*?)\)/s",$node->text(),$content);
+                    if(isset($content[1])){
+                        $data_script = json_decode($content[1]);
+                        $lotteryRef = $data_script->Params->lotteryRef;
+                        $data_string = json_encode(array(
+                            'lotteryRef' => $lotteryRef
+                        ));
+                        $ch = curl_init('https://www.thelotter.com/__Ajax/__AsyncControls.asmx/GetDrawsValueNameList');
+                        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                                'Content-Type: application/json;charset=UTF-8',
+                                'accept-language: en-US,en;q=0.8')
+                        );
+                        $result = curl_exec($ch);
+                        $data_days = json_decode($result);
+                        $count = 1;
+                        $results = array();
+                        foreach($data_days->d as $key => $data){
+                            if($count == 11){
+                                break;
+                            }
+                            $date = date("Y-m-d",strtotime(trim(explode("|",$data->DisplayText)[1])));
+                            $crawler = $this->client->request('GET', $this->provider['link']."?DrawNumber=".$data->DrawRef);
+                            $balls = $this->resultBalls($crawler->filter('.draw-result-item')->filter('.results-ball'));
+                            $crawler = new Crawler($crawler->text());
+                            $script_text = explode("new TheLotter\$JqGridControl",$crawler->text());
+                            preg_match("/\[(.*?)\]/s",explode('data : ',$script_text[1])[1],$content);
+                            $prize_json = str_replace("\r\n","",$content[0]);
 
-                    print_r(is_numeric($prize));die;
-                    preg_match("/\[(.*?)\]/s",explode("data :",$script_prizes)[1],$content);
-                    print_r(explode("data :",$script_prizes)[1]);die;
+
+                            preg_match_all("/\'LocalWinningAmount\'\:(.*?)\,/s",$prize_json,$content);
+                            $prize = 0;
+                            foreach($content[1] as $prizes){
+                                if(is_numeric(trim($prizes)) && trim($prizes) > 0){
+                                    $prize += (double)trim($prizes);
+                                }
+                            }
+                            $prize = "&euro;".number_format($prize,2,".",",");
+                            $balls['date'] = $date;
+                            $balls['prize'] = $prize;
+                            $results[] = $balls;
+                            $count++;
+                        }
+                        return $results;
+                    }
                 }
             }
         });
+        foreach($jackpots as $jackpot){
+            if(!empty($jackpot)){
+                foreach($jackpot as $key => $value){
+                    if($this->provider['class']::where('date',$value['date'])->count()){
+                        break;
+                    }
+                    $this->provider['class']::create($value);
+                }
+            }
+        }
     }
 
     private function resultBalls($jackpot_block){
@@ -252,14 +275,18 @@ class ApiController extends Controller
     private function dataInsertResults($jackpots){
         $j = 0;
         foreach ($jackpots as $jackpot){
-            if($this->provider['class']::where('date',$jackpot->date)->count()){
-                break;
+            if(!empty($jackpot)){
+                if($this->provider['class']::where('date',$jackpot['date'])->count()){
+                    break;
+                }
+                $data[$j] = $jackpot;
+                $j++;
             }
-            $data[$j] = $jackpot;
-            $j++;
         }
-        foreach ($data as $key => $data_value){
-            $this->provider['class']::create($data_value);
+        if(!empty($data)){
+            foreach ($data as $key => $data_value){
+                $this->provider['class']::create($data_value);
+            }
         }
     }
 
