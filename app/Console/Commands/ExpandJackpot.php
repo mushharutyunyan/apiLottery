@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Goutte\Client;
 use App\Models\Jackpot;
+use Log;
 class ExpandJackpot extends Command
 {
     /**
@@ -45,15 +46,17 @@ class ExpandJackpot extends Command
      */
     public function handle()
     {
+        Log::info('Expand jackpot command start '.date("Y-m-d H:i:s"));
         $client = new Client();
         $data = [];
         $now = date('Y-m-d H:i:s');
         $providers = Jackpot::$providers;
         foreach($providers as $provider => $link){
-            if(Jackpot::where('provider',$provider)->where('date','>',$now)->count()){
+            if(Jackpot::where('provider',$provider)->where('date','>',$now)->where('prize','!=','Not Published')->count()){
                 $jackpot = Jackpot::where('provider',$provider)->where('date','>',$now)->first();
                 continue;
             }
+
             $crawler = $client->request('GET', $link);
             if($crawler->filter('.sidebar-right')->count()){
                 $current_jackpot = $crawler->filter('.sidebar-right')->children('.current');
@@ -89,14 +92,19 @@ class ExpandJackpot extends Command
                 $result_data = json_decode($result);
                 $drawData = $result_data->d->State->DrawData;
                 $date = date('Y-m-d H:i:s',strtotime('+'.$drawData->secondsBeforeClose." seconds"));
-                $prize_data = explode(" ",$drawData->jackpotText);
-                $prize = $this->currencies[$prize_data[0]].$this->convertPrize(str_replace(",","",$prize_data[1]));
+                if($drawData->jackpotText == 'Not Published'){
+                    $prize = $drawData->jackpotText;
+                }else{
+                    $prize_data = explode(" ",$drawData->jackpotText);
+                    $prize = $this->currencies[$prize_data[0]].$this->convertPrize(str_replace(",","",$prize_data[1]));
+                }
             }
-
+            Log::info('Expand jackpot insert row (provider - '.$provider.' , prize - '.$prize.')');
             Jackpot::create(array('provider' => $provider,
                 'prize' => $prize,
                 'date' => date('Y-m-d H:i:s', strtotime($date))));
         }
+        Log::info('Expand jackpot command end '.date("Y-m-d H:i:s"));
     }
 
     private function convertPrize($n){
