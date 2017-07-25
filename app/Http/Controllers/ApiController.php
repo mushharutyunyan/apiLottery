@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\LaPrimitiva;
 use Illuminate\Http\Request;
 use Goutte\Client;
 use App\Models\Jackpot;
@@ -14,6 +13,8 @@ use App\Models\EuroJackpot;
 use App\Models\UKLotto;
 use App\Models\Lotto649;
 use App\Models\AustraliaPowerball;
+use App\Models\LaPrimitiva;
+use App\Models\ElGordo;
 use Symfony\Component\DomCrawler\Crawler;
 class ApiController extends Controller
 {
@@ -108,6 +109,13 @@ class ApiController extends Controller
                 'alter_fields' => array(
                     'extra_number' => 'results-ball-bonus',
                 )
+            ),
+            'elgordo' => array(
+                'link' => 'https://www.thelotter.com/lottery-results/spain-el-gordo/',
+                'class' => ElGordo::class,
+                'alter_fields' => array(
+                    'extra_number' => 'results-ball-additional',
+                )
             )
         );
         $j = 0;
@@ -137,8 +145,8 @@ class ApiController extends Controller
                 $this->dataInsertResults($jackpots);
             }
         }else{
-            if($provider == 'laprimitiva'){
-                $this->laprimitiva($crawler);
+            if($provider == 'laprimitiva' || $provider == 'elgordo'){
+                $this->laprimitiva_elgordo($crawler);
             }
 
         }
@@ -158,7 +166,7 @@ class ApiController extends Controller
         return response()->json($result);
     }
 
-    private function laprimitiva($crawler){
+    private function laprimitiva_elgordo($crawler){
         $jackpots = $crawler->filter('script')->each(function ($node) {
             if(!empty($node->text())){
                 if(preg_match('/TL.tlGlobals/',$node->text())){
