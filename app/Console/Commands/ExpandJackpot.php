@@ -21,6 +21,13 @@ class ExpandJackpot extends Command
      */
     protected $description = 'Get expand jackpots info';
 
+    protected $currencies = array(
+        'CAD' => 'CA$',
+        'AUD' => 'AU$',
+        '£' => '£',
+        '$' => '$',
+        '€' => '€',
+    );
     /**
      * Create a new command instance.
      *
@@ -83,7 +90,7 @@ class ExpandJackpot extends Command
                 $drawData = $result_data->d->State->DrawData;
                 $date = date('Y-m-d H:i:s',strtotime('+'.$drawData->secondsBeforeClose." seconds"));
                 $prize_data = explode(" ",$drawData->jackpotText);
-                $prize = $prize_data[0].$this->convertPrize(str_replace(",","",$prize_data[1]));
+                $prize = $this->currencies[$prize_data[0]].$this->convertPrize(str_replace(",","",$prize_data[1]));
             }
 
             Jackpot::create(array('provider' => $provider,
