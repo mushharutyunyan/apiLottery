@@ -14,5 +14,12 @@ use Illuminate\Http\Request;
 */
 
 Route::get('/user', function (Request $request) {
+    print_r("Asdasd");
     return $request->user();
 })->middleware('auth:api');
+
+
+Route::group(['prefix' => 'jackpot','middleware' => 'auth:api'],function () {
+    Route::get('/','ApiController@jackpot');
+    Route::get('/results/{provider}','ApiController@results');
+});
