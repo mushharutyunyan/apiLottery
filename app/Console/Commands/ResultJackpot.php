@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\CalifornaSuperLotto;
+use App\Models\MegaMillion;
 use Illuminate\Console\Command;
 use Goutte\Client;
 use App\Models\SuperenaLotto;
@@ -45,6 +47,14 @@ class ResultJackpot extends Command
                 'superstar' => 'superstar'
             )
         ),
+        'megamillions' => array(
+            'link' => 'https://www.lotto.net/mega-millions/numbers',
+            'class' => MegaMillion::class,
+            'alter_fields' => array(
+                'mega' => 'mega-ball',
+                'megaplier' => 'megaplier',
+            )
+        ),
         'floridalotto' => array(
             'link' => 'https://www.lotto.net/florida-lotto/numbers',
             'class' => FloridaLotto::class,
@@ -58,6 +68,13 @@ class ResultJackpot extends Command
             'alter_fields' => array(
                 'powerball' => 'powerball',
                 'powerplay' => 'power-play'
+            )
+        ),
+        'californiasuperlotto' => array(
+            'link' => 'https://www.lotto.net/california-super-lotto-plus/numbers',
+            'class' => CalifornaSuperLotto::class,
+            'alter_fields' => array(
+                'mega' => 'mega-ball',
             )
         ),
         'ozlotto' => array(

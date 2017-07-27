@@ -80,6 +80,7 @@ class ApiController extends Controller
             }
             $j++;
         }
+        print_r(count($providers));die;
         return response()->json($result);
     }
 }
