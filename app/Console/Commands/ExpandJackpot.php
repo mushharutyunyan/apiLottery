@@ -56,7 +56,6 @@ class ExpandJackpot extends Command
                 $jackpot = Jackpot::where('provider',$provider)->where('date','>',$now)->first();
                 continue;
             }
-
             $crawler = $client->request('GET', $link);
             if($crawler->filter('.sidebar-right')->count()){
                 $current_jackpot = $crawler->filter('.sidebar-right')->children('.current');
@@ -67,6 +66,7 @@ class ExpandJackpot extends Command
             $crawler = $client->request('GET', $current_link);
             if($crawler->filter('#dLottoSingleLineContainer')->count()){
                 $date = $crawler->filter('#dLottoSingleLineContainer')->attr('data-brand-draw-date');
+                $date = date('Y-m-d H:i:s', strtotime($date));
                 $prize = $crawler->filter('.lotto-prize')->text();
             }else{
                 $canonical_source_content = $crawler->filter('meta[name="canonical_source"]')->attr('content');
@@ -104,13 +104,17 @@ class ExpandJackpot extends Command
                 Log::info('Expand jackpot update row (provider - '.$provider.' , prize - '.$prize.') date - '.date('Y-m-d H:i:s'));
                 Jackpot::where('id',$old_jackpot->id)->update(array(
                     'prize' => $prize,
-                    'date' => date('Y-m-d H:i:s', strtotime($date)))
+                    'date' => $date
+                    )
                 );
             }else{
                 Log::info('Expand jackpot insert row (provider - '.$provider.' , prize - '.$prize.') date - '.date('Y-m-d H:i:s'));
-                Jackpot::create(array('provider' => $provider,
+                Jackpot::create(array(
+                    'provider' => $provider,
                     'prize' => $prize,
-                    'date' => date('Y-m-d H:i:s', strtotime($date))));
+                    'date' => $date
+                    )
+                );
             }
         }
         Log::info('Expand jackpot command end '.date("Y-m-d H:i:s"));
