@@ -18,7 +18,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:api');
 
 
-Route::group(['prefix' => 'jackpot','middleware' => ['auth:api','cors']],function () {
+Route::group(['prefix' => 'jackpot','middleware' => ['cors','auth:api']],function () {
     Route::get('/','ApiController@jackpot');
     Route::get('/results/{provider}','ApiController@results');
 });
