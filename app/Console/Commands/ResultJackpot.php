@@ -163,6 +163,7 @@ class ResultJackpot extends Command
                         $balls['prize'] = trim($node->filter('.jackpot')->filter('span')->text());
                         return $balls;
                     });
+                    $this->dataInsertResults(array($balls));
                     $this->dataInsertResults($jackpots);
                 }
             }else{
