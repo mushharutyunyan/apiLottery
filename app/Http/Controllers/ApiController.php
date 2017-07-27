@@ -66,9 +66,10 @@ class ApiController extends Controller
         );
         $result = array();
         $j = 0;
-        foreach($providers as $provider){
+        foreach($providers as $key => $provider){
             $data = $provider['class']::orderBy('date','DESC')->take($rows)->get();
             $i = 0;
+            $result[$j][$i]['provider'] = $key;
             foreach($data as $key => $value){
                 foreach($response_fields as $db_field => $response_field){
                     $result[$j][$i][$response_field] = $value->$db_field;
