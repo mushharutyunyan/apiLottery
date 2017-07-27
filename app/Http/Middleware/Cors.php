@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Request;
+use Log;
 class Cors
 {
     /**
@@ -15,6 +16,7 @@ class Cors
      */
     public function handle($request, Closure $next)
     {
+        Log::info('Request Ip: '.Request::ip());
         if(Request::ip() != '46.166.180.153'){
             return response()->json(false);
         }
