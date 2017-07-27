@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('command:expand-jackpot')->everyMinute();
-        $schedule->command('command:result-jackpot')->cron('0 */12 * * *');;
+        $schedule->command('command:result-jackpot')->everyMinute();
     }
 
     /**
