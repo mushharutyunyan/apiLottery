@@ -50,6 +50,7 @@ class ExpandJackpot extends Command
         $client = new Client();
         $data = [];
         $now = date('Y-m-d H:i:s');
+
         $providers = Jackpot::$providers;
         foreach($providers as $provider => $link){
             if(Jackpot::where('provider',$provider)->where('date','>',$now)->where('prize','!=','Not Published')->count()){
@@ -99,6 +100,8 @@ class ExpandJackpot extends Command
                     $prize = $this->currencies[$prize_data[0]].$this->convertPrize(str_replace(",","",$prize_data[1]));
                 }
             }
+            $rounded = date('H:i:s', round(strtotime(date('H:i:s',strtotime($date)))/60)*60);
+            $date = date("Y-m-d",strtotime($date))." ".$rounded;
             if(Jackpot::where('provider',$provider)->where('date',$date)->where('prize','=','Not Published')->count()){
                 $old_jackpot = Jackpot::where('provider',$provider)->where('date',$date)->where('prize','=','Not Published')->first();
                 Log::info('Expand jackpot update row (provider - '.$provider.' , prize - '.$prize.') date - '.date('Y-m-d H:i:s'));
