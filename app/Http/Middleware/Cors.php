@@ -20,6 +20,7 @@ class Cors
         if(Request::ip() != '46.166.180.153'){
             return response()->json(false);
         }
+        Log::info('Success Ip: '.Request::ip());
         return $next($request)
             ->header('Access-Control-Allow-Origin', '*')
             ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
