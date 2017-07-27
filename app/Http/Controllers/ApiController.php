@@ -32,14 +32,18 @@ class ApiController extends Controller
         return response()->json($data);
     }
 
-    public function results($provider){
+    public function results($provider,$last = null){
+        $rows = 10;
+        if($last){
+            $rows = 1;
+        }
         $response_fields = array(
             'date' => 'draw_date',
             'prize' => 'prize',
             'numbers' => 'winning_numbers'
         );
         $providers = ResultJackpot::$providers;
-        $data = $providers[$provider]['class']::orderBy('date','DESC')->take(10)->get();
+        $data = $providers[$provider]['class']::orderBy('date','DESC')->take($rows)->get();
         $result = array();
         $i = 0;
         foreach($data as $key => $value){
@@ -51,6 +55,12 @@ class ApiController extends Controller
             }
             $i++;
         }
+        if($last){
+            return $result;
+        }
         return response()->json($result);
+    }
+    public function lastResult($provider){
+        return response()->json($this->results($provider,1));
     }
 }

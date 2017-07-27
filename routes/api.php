@@ -21,4 +21,5 @@ Route::get('/user', function (Request $request) {
 Route::group(['prefix' => 'jackpot','middleware' => ['cors','auth:api']],function () {
     Route::get('/','ApiController@jackpot');
     Route::get('/results/{provider}','ApiController@results');
+    Route::get('/results/{provider}/last','ApiController@lastResult');
 });
