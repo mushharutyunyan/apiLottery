@@ -34,9 +34,7 @@ class ApiController extends Controller
 
     public function results($provider,$last = null){
         $rows = 10;
-        if($last){
-            $rows = 1;
-        }
+
         $response_fields = array(
             'date' => 'draw_date',
             'prize' => 'prize',
@@ -55,12 +53,33 @@ class ApiController extends Controller
             }
             $i++;
         }
-        if($last){
-            return $result;
-        }
+
         return response()->json($result);
     }
-    public function lastResult($provider){
-        return response()->json($this->results($provider,1));
+    public function lastResult(){
+        $rows = 1;
+        $providers = ResultJackpot::$providers;
+        $response_fields = array(
+            'date' => 'draw_date',
+            'prize' => 'prize',
+            'numbers' => 'winning_numbers'
+        );
+        $result = array();
+        $j = 0;
+        foreach($providers as $provider){
+            $data = $provider['class']::orderBy('date','DESC')->take($rows)->get();
+            $i = 0;
+            foreach($data as $key => $value){
+                foreach($response_fields as $db_field => $response_field){
+                    $result[$j][$i][$response_field] = $value->$db_field;
+                }
+                foreach ($provider['alter_fields'] as $field => $class){
+                    $result[$j][$i][$field] = $value->$field;
+                }
+                $i++;
+            }
+            $j++;
+        }
+        return response()->json($result);
     }
 }
