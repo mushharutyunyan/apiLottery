@@ -153,6 +153,8 @@ class ResultJackpot extends Command
      */
     public function handle()
     {
+        $memory_size = memory_get_usage();
+        echo $this->convert(memory_get_usage(true));
         Log::info('Result jackpot command start '.date("Y-m-d H:i:s"));
         $client = new Client();
         $providers = ResultJackpot::$providers;
@@ -189,7 +191,8 @@ class ResultJackpot extends Command
 
 
         }
-        Log::info('Result jackpot command end '.date("Y-m-d H:i:s"));
+        $memory_size = memory_get_usage();
+        print_r($this->convert(memory_get_usage(true)));die;
     }
     private function spanish_lotto($crawler){
         $jackpots = $crawler->filter('script')->each(function ($node) {
@@ -210,6 +213,7 @@ class ResultJackpot extends Command
                                 'Content-Type: application/json;charset=UTF-8',
                                 'accept-language: en-US,en;q=0.8')
                         );
+
                         $result = curl_exec($ch);
                         $data_days = json_decode($result);
                         $count = 1;
@@ -321,4 +325,10 @@ class ResultJackpot extends Command
             }
         }
     }
+    public function convert($size)
+    {
+        $unit=array('b','kb','mb','gb','tb','pb');
+        return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
+    }
+
 }

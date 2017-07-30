@@ -49,11 +49,10 @@ class ExpandJackpot extends Command
         Log::info('Expand jackpot command start '.date("Y-m-d H:i:s"));
         $client = new Client();
         $data = [];
-        $now = date('Y-m-d H:i:s');
-
+        $now = date("Y-m-d H:i:s",strtotime(date('Y-m-d H:i').":00"));
         $providers = Jackpot::$providers;
         foreach($providers as $provider => $link){
-            if(Jackpot::where('provider',$provider)->where('date','>',$now)->where('prize','!=','Not Published')->count()){
+            if(Jackpot::where('provider',$provider)->where('date','>=',$now)->where('prize','!=','Not Published')->count()){
                 $jackpot = Jackpot::where('provider',$provider)->where('date','>',$now)->first();
                 continue;
             }
@@ -102,6 +101,9 @@ class ExpandJackpot extends Command
             }
             $rounded = date('H:i:s', round(strtotime(date('H:i:s',strtotime($date)))/60)*60);
             $date = date("Y-m-d",strtotime($date))." ".$rounded;
+            if($date == $now){
+                continue;
+            }
             if(Jackpot::where('provider',$provider)->where('date',$date)->where('prize','=','Not Published')->count()){
                 $old_jackpot = Jackpot::where('provider',$provider)->where('date',$date)->where('prize','=','Not Published')->first();
                 Log::info('Expand jackpot update row (provider - '.$provider.' , prize - '.$prize.') date - '.date('Y-m-d H:i:s'));
