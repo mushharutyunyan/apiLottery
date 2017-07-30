@@ -75,7 +75,7 @@ class ApiController extends Controller
                     $result[$j][$i][$response_field] = $value->$db_field;
                 }
                 foreach ($provider['alter_fields'] as $field => $class){
-                    $result[$j][$i][$field] = $value->$field;
+                    $result[$j][$i]['winning_numbers'] .= " " . $value->$field;
                 }
                 $i++;
             }
