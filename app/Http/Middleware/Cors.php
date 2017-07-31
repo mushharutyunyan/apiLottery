@@ -16,10 +16,10 @@ class Cors
      */
     public function handle($request, Closure $next)
     {
-        Log::info('Request Ip: '.Request::ip());
-        if(Request::ip() != '46.166.180.153' && Request::ip() != '79.179.56.196'){
-            return response()->json(false);
-        }
+//        Log::info('Request Ip: '.Request::ip());
+//        if(Request::ip() != '46.166.180.153' && Request::ip() != '79.179.56.196'){
+//            return response()->json(false);
+//        }
         Log::info('Success Ip: '.Request::ip());
         return $next($request)
             ->header('Access-Control-Allow-Origin', '*')
