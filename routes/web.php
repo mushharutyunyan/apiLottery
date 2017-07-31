@@ -1,10 +1,5 @@
 <?php
-
-
-Route::group(['prefix' => 'jackpot','middleware' => 'cors'],function () {
-    Route::get('/','ApiController@jackpot');
-    Route::get('/results/{provider}','ApiController@results');
-});
+use App\Models\User;
 
 Route::get('/', function () {
     return view('welcome');
@@ -12,4 +7,6 @@ Route::get('/', function () {
 
 Auth::routes();
 
+
 Route::get('/home', 'HomeController@index');
+
