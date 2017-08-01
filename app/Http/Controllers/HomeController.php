@@ -24,12 +24,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $user = User::find(1);
-
-// Creating a token without scopes...
-        $token = $user->createToken('Token Name')->accessToken;
-        print_R($token);die;
-// Creating a token with scopes...
         $token = $user->createToken('My Token', ['place-orders'])->accessToken;
 
         $view = 'home';
