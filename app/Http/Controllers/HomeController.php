@@ -24,10 +24,11 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $view = 'home';
-        if(Auth::user()['role'] == User::ADMIN){
-            $view = 'adminHome';
-        }
-        return view($view);
+        return view('home');
+    }
+
+    public function plans()
+    {
+        return view('plans');
     }
 }

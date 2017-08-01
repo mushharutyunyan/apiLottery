@@ -8,7 +8,8 @@ Route::get('/', function () {
 Auth::routes();
 
 
-Route::get('/home', 'HomeController@index');
+Route::get('/', 'HomeController@index');
+Route::get('/plans', 'HomeController@plans');
 
 Route::get('/verifyemail/{token}', 'Auth\RegisterController@verify');
 
