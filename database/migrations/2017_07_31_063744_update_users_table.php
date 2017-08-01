@@ -32,8 +32,8 @@ class UpdateUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('role');
-            $table->dropColumn('count_requests');
+//            $table->dropColumn('role');
+//            $table->dropColumn('count_requests');
 //            $table->dropColumn('verified');
 //            $table->dropColumn('email_token');
         });
