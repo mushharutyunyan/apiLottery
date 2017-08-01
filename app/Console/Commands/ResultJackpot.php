@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\CalifornaSuperLotto;
+use App\Models\EuroMillions;
 use App\Models\MegaMillion;
 use Illuminate\Console\Command;
 use Goutte\Client;
@@ -53,6 +54,14 @@ class ResultJackpot extends Command
             'alter_fields' => array(
                 'mega' => 'mega-ball',
                 'megaplier' => 'megaplier',
+            )
+        ),
+        'euromillions' => array(
+            'link' => 'https://www.lotto.net/euromillions/results',
+            'class' => EuroMillions::class,
+            'alter_fields' => array(
+                'luckystar' => 'lucky-star',
+                'luckystar2' => 'lucky-star',
             )
         ),
         'floridalotto' => array(
