@@ -24,8 +24,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $token = $user->createToken('My Token', ['place-orders'])->accessToken;
-
         $view = 'home';
         if(Auth::user()['role'] == User::ADMIN){
             $view = 'adminHome';
