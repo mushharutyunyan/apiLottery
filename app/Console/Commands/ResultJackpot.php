@@ -177,23 +177,30 @@ class ResultJackpot extends Command
                 $last_jackpot = $crawler->filter('.results-big');
                 $date = $last_jackpot->filter('.date')->text();
                 $date = date("Y-m-d",strtotime($date));
-                if(!$this->provider['class']::where('date',$date)->count()){
-                    $balls = $this->resultBalls($last_jackpot->filter('.balls')->children('.ball'));
-                    $balls['date'] = $date;
-                    $balls['prize'] = trim($last_jackpot->filter('.jackpot')->filter('span')->text());
-                    $data[$j] = $balls;
-                    ++$j;
-                    $jackpots = $crawler->filter('.results-med')->each(function ($node) {
-                        $date = $node->filter('.date')->text();
-                        $date = date("Y-m-d",strtotime($date));
-                        $balls = $this->resultBalls($node->filter('.balls')->children('.ball'));
-                        $balls['date'] = $date;
-                        $balls['prize'] = trim($node->filter('.jackpot')->filter('span')->text());
-                        return $balls;
-                    });
-                    $this->dataInsertResults(array($balls));
-                    $this->dataInsertResults($jackpots);
+                $update = false;
+                if($this->provider['class']::where('date',$date)->count()){
+                   if(!$this->provider['class']::where('prize','TBC')->count()){
+                        continue;
+                   }else{
+                       $update = true;
+                   }
                 }
+
+                $balls = $this->resultBalls($last_jackpot->filter('.balls')->children('.ball'));
+                $balls['date'] = $date;
+                $balls['prize'] = trim($last_jackpot->filter('.jackpot')->filter('span')->text());
+                $data[$j] = $balls;
+                ++$j;
+                $jackpots = $crawler->filter('.results-med')->each(function ($node) {
+                    $date = $node->filter('.date')->text();
+                    $date = date("Y-m-d",strtotime($date));
+                    $balls = $this->resultBalls($node->filter('.balls')->children('.ball'));
+                    $balls['date'] = $date;
+                    $balls['prize'] = trim($node->filter('.jackpot')->filter('span')->text());
+                    return $balls;
+                });
+                $this->dataInsertResults(array($balls),$update);
+                $this->dataInsertResults($jackpots,$update);
             }else{
                 $this->spanish_lotto($crawler);
             }
@@ -316,12 +323,14 @@ class ResultJackpot extends Command
         return $numbers;
     }
 
-    private function dataInsertResults($jackpots){
+    private function dataInsertResults($jackpots,$update){
         $j = 0;
         foreach ($jackpots as $jackpot){
             if(!empty($jackpot)){
                 if($this->provider['class']::where('date',$jackpot['date'])->count()){
-                    break;
+                    if(!$this->provider['class']::where('prize','TBC')->count()){
+                        break;
+                    }
                 }
                 $data[$j] = $jackpot;
                 $j++;
@@ -329,8 +338,13 @@ class ResultJackpot extends Command
         }
         if(!empty($data)){
             foreach ($data as $key => $data_value){
-                Log::info('Result jackpot insert row - '.json_encode($data_value)." date - ".date("Y-m-d H:i:s"));
-                $this->provider['class']::create($data_value);
+                if($update){
+                    $this->provider['class']::where('date', $data_value['date'])->update($data_value);
+                    Log::info('Result jackpot update row - '.json_encode($data_value)." date - ".date("Y-m-d H:i:s"));
+                }else{
+                    $this->provider['class']::create($data_value);
+                    Log::info('Result jackpot insert row - '.json_encode($data_value)." date - ".date("Y-m-d H:i:s"));
+                }
             }
         }
     }
