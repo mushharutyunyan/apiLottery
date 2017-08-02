@@ -15,10 +15,10 @@ use Illuminate\Http\Request;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
-})->middleware('auth:api');
+})->middleware('jwt.auth');
 
 
-Route::group(['prefix' => 'jackpot','middleware' => ['cors','auth:api']],function () {
+Route::group(['prefix' => 'jackpot','middleware' => ['cors','jwt.auth']],function () {
     Route::get('/','ApiController@jackpot');
     Route::get('/results/{provider}','ApiController@results');
     Route::get('/results/all/last','ApiController@lastResult');

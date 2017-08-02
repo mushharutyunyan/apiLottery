@@ -155,18 +155,14 @@ return [
         |
         */
 
-        'auth' => 'Tymon\JWTAuth\Providers\Auth\IlluminateAuthAdapter',
+        'auth' => function ($app) {
+            return new Tymon\JWTAuth\Providers\Auth\IlluminateAuthAdapter($app['auth']);
+        },
 
-        /*
-        |--------------------------------------------------------------------------
-        | Storage Provider
-        |--------------------------------------------------------------------------
-        |
-        | Specify the provider that is used to store tokens in the blacklist
-        |
-        */
 
-        'storage' => 'Tymon\JWTAuth\Providers\Storage\IlluminateCacheAdapter',
+        'storage' => function ($app) {
+            return new Tymon\JWTAuth\Providers\Storage\IlluminateCacheAdapter($app['cache']);
+        }
 
     ],
 

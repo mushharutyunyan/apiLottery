@@ -17,9 +17,19 @@ use App\Models\LaPrimitiva;
 use App\Models\ElGordo;
 use App\Models\BonoLotto;
 use App\Console\Commands\ResultJackpot;
+use Illuminate\Support\Facades\Auth;
+
 class ApiController extends Controller
 {
     public function jackpot(){
+        $user = Auth::user();
+        if($user->id != 2){// for Maor
+            if(!$user->count_requests){
+                return response()->json(['error' => 'Requests count is over']);
+            }
+            $user->count_requests = $user->count_requests - 1;
+            $user->save();
+        }
         $now = date('Y-m-d H:i:s');
         $providers = Jackpot::$providers;
         foreach($providers as $provider => $link) {
@@ -33,8 +43,15 @@ class ApiController extends Controller
     }
 
     public function results($provider,$last = null){
+        $user = Auth::user();
+        if($user->id != 2){// for Maor
+            if(!$user->count_requests){
+                return response()->json(['error' => 'Requests count is over']);
+            }
+            $user->count_requests = $user->count_requests - 1;
+            $user->save();
+        }
         $rows = 10;
-
         $response_fields = array(
             'date' => 'draw_date',
             'prize' => 'prize',
@@ -53,10 +70,17 @@ class ApiController extends Controller
             }
             $i++;
         }
-
         return response()->json($result);
     }
     public function lastResult(){
+        $user = Auth::user();
+        if($user->id != 2){// for Maor
+            if(!$user->count_requests){
+                return response()->json(['error' => 'Requests count is over']);
+            }
+            $user->count_requests = $user->count_requests - 1;
+            $user->save();
+        }
         $rows = 1;
         $providers = ResultJackpot::$providers;
         $response_fields = array(

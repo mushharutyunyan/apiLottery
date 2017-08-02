@@ -9,7 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
 
-    use HasApiTokens, Notifiable;
+    use Notifiable;
 
     const ADMIN = 1;
     const USER = 2;
@@ -20,7 +20,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','email_token'
+        'name', 'email', 'password','email_token','count_requests'
     ];
 
     /**
