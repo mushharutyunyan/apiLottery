@@ -14,7 +14,7 @@ class UpdateUsersTable2 extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->text('api_token')->after('email_token');
+            $table->text('api_token')->after('email_token')->nullable();
         });
     }
 
