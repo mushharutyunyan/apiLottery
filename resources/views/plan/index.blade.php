@@ -38,13 +38,10 @@
                                         <td>{{$plan->description}}</td>
                                         <td>{{$plan->amount}}</td>
                                         <td>
-                                            {!! Form::open(['url' => '/plan/'.$plan->id, 'method' => 'DELETE']) !!}
                                             @if(!$plan->main)
                                             <a class="btn btn-info" href="/plan/makeMain/{{$plan->id}}">Make Main</a>
                                             @endif
                                             <a class="btn btn-warning" href="/plan/{{$plan->id}}/edit">Edit</a>
-                                            <button class="btn btn-danger">Delete</button>
-                                            {!! Form::close() !!}
                                         </td>
                                     </tr>
                                 @endforeach
