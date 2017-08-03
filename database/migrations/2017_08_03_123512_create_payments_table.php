@@ -16,13 +16,12 @@ class CreatePaymentsTable extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
-            $table->integer('plan_id')->unsigned();
+            $table->integer('plan_id');
             $table->string('paymentId');
             $table->string('cart')->nullable();
             $table->tinyInteger('status');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('plan_id')->references('id')->on('plans');
         });
     }
 
