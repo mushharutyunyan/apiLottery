@@ -15,7 +15,7 @@ class UpdateUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->integer('role')->after('id')->default(2);
-            $table->integer('count_requests')->after('password')->default(10);
+            $table->integer('count_requests')->after('password')->default(100);
             $table->tinyInteger('verified')->after('password')->default(0);
             $table->string('email_token')->after('verified')->nullable();
         });
