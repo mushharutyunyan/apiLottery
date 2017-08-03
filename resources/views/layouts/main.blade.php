@@ -51,6 +51,14 @@
 
                 <!-- Right Side Of Navbar -->
                 <ul class="nav navbar-nav navbar-right" style="font-size: 14px;">
+                    @if (Auth::guest())
+                        <li><a href="{{ url('/login') }}">Login</a></li>
+                        <li><a href="{{ url('/register') }}">Register</a></li>
+                    @else
+                    @if(Auth::user()['role'] == \App\Models\User::ADMIN)
+                    <li><a href="{{ url('/plan') }}">Change Plan</a></li>
+                    @endif
+                    <li><a href="{{ url('/payments') }}">Payments</a></li>
                     <li><a href="{{ url('/plans') }}">Plans</a></li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -71,6 +79,7 @@
                                 </li>
                             </ul>
                         </li>
+                     @endif
                 </ul>
             </div>
         </div>
@@ -78,22 +87,22 @@
 
     @yield('content')
 </div>
-    <div id="copyrights" class="copyrights-dark">
+    {{--<div id="copyrights" class="copyrights-dark">--}}
 
-        <div class="container clearfix">
+        {{--<div class="container clearfix">--}}
 
 
-            <div class="col_half">
+            {{--<div class="col_half">--}}
 
-                Copyrights &copy; 2017 &amp; All Rights Reserved.
+                {{--Copyrights &copy; 2017 &amp; All Rights Reserved.--}}
 
-            </div>
+            {{--</div>--}}
 
-        </div>
+        {{--</div>--}}
 
-    </div>
+    {{--</div>--}}
 
-    <div id="gotoTop" class="fa fa-angle-up"></div>
+    {{--<div id="gotoTop" class="fa fa-angle-up"></div>--}}
 <!-- Scripts -->
 <script src="/js/app.js"></script>
 </body>

@@ -8,85 +8,38 @@
                     <div class="dotted-divider"></div>
                     <h2 id="pricing-signup" class="center">Choose your Plan</h2>
                     <div class="pricing pricing3 clearfix">
-                        <div class="pricing-wrap">
+                        @foreach($plans as $plan)
+                        @if($plan->main)
+                            <?php $active = 'best-price'; ?>
+                            <?php $active_button = 'inverse'; ?>
+                        @else
+                            <?php $active = ''; ?>
+                            <?php $active_button = ''; ?>
+                        @endif
+                        <div class="pricing-wrap {{$active}}">
+
                             <div class="pricing-inner">
-
-                                <div class="pricing-title"><h4>Professional Plan<span>For Super Professionals</span></h4></div>
-
-                                <div class="pricing-price">$9<span class="price-sub">99</span><span class="price-tenure">per month</span></div>
-
+                                <div class="pricing-title"><h4>{{$plan->name}}<span>{{$plan->description}}</span></h4></div>
+                                <div class="pricing-price">${{explode(".",$plan->amount)[0]}}<span class="price-sub">{{explode(".",$plan->amount)[1]}}</span></div>
                                 <div class="pricing-features">
                                     <ul>
-                                        <li><span>Full</span> Access</li>
-                                        <li>Source Files</li>
-                                        <li><span>100</span> Users Accounts</li>
-                                        <li><span>1 year</span> license</li>
-                                        <li>Phone &amp; Email Support</li>
+                                        <li></li>
+                                        <li><span>{{$plan->calls}}</span> Calls</li>
+                                        <li></li>
                                     </ul>
                                 </div>
-
                                 <div class="pricing-action">
-                                    <a href="#" class="simple-button">Get Started</a>
+                                    <form method="POST" action="{{ url('/payment/payWithPaypal') }}">
+                                        {{ csrf_field() }}
+                                        <input type="hidden" name="plan_id" value="{{$plan->id}}">
+                                        <button class="simple-button {{$active_button}}">Get Started</button>
+                                    </form>
                                 </div>
 
                             </div>
 
                         </div>
-
-
-                        <div class="pricing-wrap best-price">
-
-                            <div class="pricing-inner">
-
-                                <div class="pricing-title"><h4>Business Plan<span>Our Best-Selling Plan</span></h4></div>
-
-                                <div class="pricing-price">$14<span class="price-sub">99</span><span class="price-tenure">per month</span></div>
-
-                                <div class="pricing-features">
-                                    <ul>
-                                        <li><span>Full</span> Access</li>
-                                        <li>Source Files</li>
-                                        <li><span>500</span> Users Accounts</li>
-                                        <li><span>5 years</span> license</li>
-                                        <li>Phone &amp; Email Support</li>
-                                    </ul>
-                                </div>
-
-                                <div class="pricing-action">
-                                    <a href="#" class="simple-button inverse">Get Started</a>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="pricing-wrap">
-
-                            <div class="pricing-inner">
-
-                                <div class="pricing-title"><h4>Enterprise Plan<span>For Corporates &amp; Man-Eaters</span></h4></div>
-
-                                <div class="pricing-price">$24<span class="price-sub">99</span><span class="price-tenure">per month</span></div>
-
-                                <div class="pricing-features">
-                                    <ul>
-                                        <li><span>Full</span> Access</li>
-                                        <li>Source Files</li>
-                                        <li><span>Unlimited</span> Users Accounts</li>
-                                        <li><span>10 years</span> license</li>
-                                        <li>Phone &amp; Email Support</li>
-                                    </ul>
-                                </div>
-
-                                <div class="pricing-action">
-                                    <a href="#" class="simple-button">Get Started</a>
-                                </div>
-
-                            </div>
-
-                        </div>
-
+                        @endforeach
 
                     </div>
 

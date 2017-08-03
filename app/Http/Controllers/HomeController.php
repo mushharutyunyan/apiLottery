@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
+use App\Models\Plan;
 use Illuminate\Http\Request;
 use Auth;
 use App\Models\User;
 use JWTAuth;
+
 class HomeController extends Controller
 {
     /**
@@ -25,12 +28,24 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $token = JWTAuth::fromUser(Auth::user());
-        return view('home',['token' => $token]);
+        if(empty(Auth::user()['api_token'])){
+            $token = JWTAuth::fromUser(Auth::user());
+            $user = Auth::user();
+            $user->api_token = $token;
+            $user->save();
+        }
+
+        return view('home');
     }
 
     public function plans()
     {
-        return view('plans');
+        $plans = Plan::all();
+        return view('plans',['plans' => $plans]);
+    }
+
+    public function payments(){
+        $payments = Payment::where('user_id',Auth::user()['id'])->get();
+        return view('payments',['payments' => $payments]);
     }
 }

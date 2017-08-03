@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.main')
 
 @section('content')
     <style>
@@ -23,10 +23,17 @@
                     </div>
 
                     <div class="panel-body">
+                        @if (session('status'))
+                            <div class="alert alert-success">
+                                <ul class="list-group">
+                                    <li class="list-group-item">{{ session('status') }}</li>
+                                </ul>
+                            </div>
+                        @endif
                         <ul class="list-group">
                             <li class="list-group-item">Name: {{Auth::user()['name']}}</li>
                             <li class="list-group-item">Call count: {{Auth::user()['count_requests']}}</li>
-                            <li class="list-group-item">Token: <textarea readonly class="form-control" rows="5">{{$token}}</textarea></li>
+                            <li class="list-group-item">Token: <textarea readonly class="form-control" rows="5">{{Auth::user()['api_token']}}</textarea></li>
                         </ul>
                     </div>
                 </div>
