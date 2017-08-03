@@ -9,7 +9,6 @@
                             <span>
                                 Plans
                             </span>
-                            <a href="/plan/create" class="btn btn-default">Create</a>
                         </div>
                     </div>
                     <div class="panel-body">
