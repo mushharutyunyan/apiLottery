@@ -23,10 +23,11 @@ class PlansController extends Controller
             'calls' => 'required|numeric',
         ]);
         $data = $request->all();
-        $data['main'] = 0;
         if(isset($data['main'])){
             Plan::where('id','>',0)->update(array('main' => 0));
             $data['main'] = 1;
+        }else{
+            $data['main'] = 0;
         }
         Plan::create($data);
         return redirect('/plan')->with(['status' => 'Plan has been created successfully']);

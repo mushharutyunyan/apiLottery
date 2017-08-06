@@ -143,7 +143,7 @@ class PaymentController extends Controller
             ));
             $payment = Payment::where('paymentId',$payment_id)->first();
             User::where("id",$payment->user->id)->update(array('count_requests' => ($payment->user->count_requests + $payment->plan->calls)));
-            return redirect('/')->with(['status' => 'Payment success']);
+            return redirect('/')->with(['status' => 'Payment success','paymentId' => $payment_id]);
         }
         Payment::where('paymentId',$payment_id)->update(array(
             'status' => Payment::WRONG,

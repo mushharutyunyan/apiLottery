@@ -34,8 +34,12 @@ class HomeController extends Controller
             $user->api_token = $token;
             $user->save();
         }
-
-        return view('home');
+        if(session('paymentId')){
+            $payment = Payment::where('paymentId',session('paymentId'))->first();
+            return view('thankyou',['payment' => $payment]);
+        }else{
+            return view('home');
+        }
     }
 
     public function plans()
@@ -45,7 +49,7 @@ class HomeController extends Controller
     }
 
     public function payments(){
-        $payments = Payment::where('user_id',Auth::user()['id'])->get();
+        $payments = Payment::where('user_id',Auth::user()['id'])->where('status',Payment::SUCCESS)->get();
         return view('payments',['payments' => $payments]);
     }
 }
