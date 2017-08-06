@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Info;
 use Illuminate\Http\Request;
 
 use App\Models\Jackpot;
@@ -106,5 +107,10 @@ class ApiController extends Controller
             $j++;
         }
         return response()->json($result);
+    }
+
+    public function info(){
+        $infos = Info::all();
+        return response()->json($infos);
     }
 }

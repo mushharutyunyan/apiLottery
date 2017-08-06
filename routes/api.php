@@ -22,4 +22,5 @@ Route::group(['prefix' => 'jackpot','middleware' => ['cors','jwt.auth']],functio
     Route::get('/','ApiController@jackpot');
     Route::get('/results/{provider}','ApiController@results');
     Route::get('/results/all/last','ApiController@lastResult');
+    Route::get('/info','ApiController@info');
 });
