@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class BonoLotto extends Model
 {
-    protected $fillable = ['date','extra_number','numbers','prize'];
+    protected $fillable = ['date','comp','reint','numbers','prize'];
 }

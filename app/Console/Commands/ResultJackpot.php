@@ -124,24 +124,26 @@ class ResultJackpot extends Command
             )
         ),
         'laprimitiva' => array(
-            'link' => 'https://www.thelotter.com/lottery-results/spain-la-primitiva/',
+            'link' => 'https://www.onelotto.com/lottery-results/spanish-la-primitiva/draw-history?last_days=30&page=1&per_page=10',
             'class' => LaPrimitiva::class,
             'alter_fields' => array(
-                'extra_number' => 'results-ball-bonus',
+                'comp' => 'comp',
+                'reimb' => 'reimb',
             )
         ),
         'elgordo' => array(
-            'link' => 'https://www.thelotter.com/lottery-results/spain-el-gordo/',
+            'link' => 'https://www.onelotto.com/lottery-results/spanish-el-gordo/draw-history?last_days=30&page=1&per_page=10',
             'class' => ElGordo::class,
             'alter_fields' => array(
-                'extra_number' => 'results-ball-additional',
+                'extra_number' => 'extra_number',
             )
         ),
         'bonolotto' => array(
-            'link' => 'https://www.thelotter.com/lottery-results/spain-bonoloto/',
+            'link' => 'https://www.onelotto.com/lottery-results/spanish-bonoloto/draw-history?last_days=30&page=1&per_page=10',
             'class' => BonoLotto::class,
             'alter_fields' => array(
-                'extra_number' => 'results-ball-bonus',
+                'comp' => 'comp',
+                'reint' => 'reint',
             )
         )
     );
@@ -202,7 +204,7 @@ class ResultJackpot extends Command
                 $this->dataInsertResults(array($balls),$update);
                 $this->dataInsertResults($jackpots,$update);
             }else{
-                $this->spanish_lotto($crawler);
+                $this->spanish_lotto();
             }
 
 
@@ -210,70 +212,52 @@ class ResultJackpot extends Command
         $memory_size = memory_get_usage();
         print_r($this->convert(memory_get_usage(true)));die;
     }
-    private function spanish_lotto($crawler){
-        $jackpots = $crawler->filter('script')->each(function ($node) {
-            if(!empty($node->text())){
-                if(preg_match('/TL.tlGlobals/',$node->text())){
-                    preg_match("/\((.*?)\)/s",$node->text(),$content);
-                    if(isset($content[1])){
-                        $data_script = json_decode($content[1]);
-                        $lotteryRef = $data_script->Params->lotteryRef;
-                        $data_string = json_encode(array(
-                            'lotteryRef' => $lotteryRef
-                        ));
-                        $ch = curl_init('https://www.thelotter.com/__Ajax/__AsyncControls.asmx/GetDrawsValueNameList');
-                        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-                        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                                'Content-Type: application/json;charset=UTF-8',
-                                'accept-language: en-US,en;q=0.8')
-                        );
+    private function spanish_lotto(){
 
-                        $result = curl_exec($ch);
-                        $data_days = json_decode($result);
-                        $count = 1;
-                        $results = array();
-                        foreach($data_days->d as $key => $data){
-                            if($count == 11){
-                                break;
-                            }
-                            $date = date("Y-m-d",strtotime(trim(explode("|",$data->DisplayText)[1])));
-                            $crawler = $this->client->request('GET', $this->provider['link']."?DrawNumber=".$data->DrawRef);
-                            $balls = $this->resultBalls($crawler->filter('.draw-result-item')->filter('.results-ball'));
-                            $crawler = new Crawler($crawler->text());
-                            $script_text = explode("new TheLotter\$JqGridControl",$crawler->text());
-                            preg_match("/\[(.*?)\]/s",explode('data : ',$script_text[1])[1],$content);
-                            $prize_json = str_replace("\r\n","",$content[0]);
+        $ch = curl_init($this->provider['link']);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'content-type:application/json',
+                'server:cloudflare-nginx',
+                'accept:application/json, text/plain, */*')
+        );
 
-
-                            preg_match_all("/\'LocalWinningAmount\'\:(.*?)\,/s",$prize_json,$content);
-                            $prize = 0;
-                            foreach($content[1] as $prizes){
-                                if(is_numeric(trim($prizes)) && trim($prizes) > 0){
-                                    $prize += (double)trim($prizes);
-                                }
-                            }
-                            $prize = "€".number_format($prize,2,".",",");
-                            $balls['date'] = $date;
-                            $balls['prize'] = $prize;
-                            $results[] = $balls;
-                            $count++;
+        $result = curl_exec($ch);
+        $data_days = json_decode($result);
+        $results = array();
+        foreach($data_days[0]->data as $key => $data){
+            $balls = array();
+            $date = date('Y-m-d',strtotime($data->drawDateLotteryTz));
+            $all_balls = explode('|',$data->numbers);
+            $count = 1;
+            foreach($all_balls as $number){
+                if($count > count($all_balls) - count($this->provider['alter_fields'])){// for specific balls
+                    foreach($this->provider['alter_fields'] as $alter_field){
+                        if(!array_key_exists($alter_field,$balls)){
+                            $balls[$alter_field] = $number;
+                            break;
                         }
-                        return $results;
+                    }
+                }else{
+                    if(array_key_exists('numbers',$balls)){
+                        $balls['numbers'] .= " ".$number;
+                    }else{
+                        $balls['numbers'] = $number;
                     }
                 }
+                $count++;
             }
-        });
-        foreach($jackpots as $jackpot){
-            if(!empty($jackpot)){
-                foreach($jackpot as $key => $value){
-                    if($this->provider['class']::where('date',$value['date'])->count()){
-                        break;
-                    }
-                    $this->provider['class']::create($value);
-                }
+            $balls['date'] = $date;
+            $prize = "€".number_format($data->jackpot,0,".",",");
+            $balls['prize'] = $prize;
+            $results[] = $balls;
+        }
+        foreach($results as $jackpot){
+            if($this->provider['class']::where('date',$jackpot['date'])->count()){
+                break;
             }
+            $this->provider['class']::create($jackpot);
         }
     }
 
