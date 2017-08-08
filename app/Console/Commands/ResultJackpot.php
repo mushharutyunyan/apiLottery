@@ -170,9 +170,10 @@ class ResultJackpot extends Command
         $client = new Client();
         $providers = ResultJackpot::$providers;
         $this->client = $client;
-        foreach($providers as $provider){
+        foreach($providers as $key => $provider){
             $j = 0;
             $this->provider = $provider;
+
             $crawler = $this->client->request('GET', $this->provider['link']);
             $this->alter_fields = $this->provider['alter_fields'];
             if($crawler->filter('.results-big')->count()){
@@ -180,9 +181,16 @@ class ResultJackpot extends Command
                 $date = $last_jackpot->filter('.date')->text();
                 $date = date("Y-m-d",strtotime($date));
                 $update = false;
+                $balls['prize'] = trim($last_jackpot->filter('.jackpot')->filter('span')->text());
+
                 if($this->provider['class']::where('date',$date)->count()){
+                   $last_row = $this->provider['class']::where('date',$date)->first();
                    if(!$this->provider['class']::where('prize','TBC')->count()){
-                        continue;
+                       if($last_row->prize != $balls['prize']){
+                           $update = true;
+                       }else{
+                            continue;
+                       }
                    }else{
                        $update = true;
                    }
@@ -190,7 +198,7 @@ class ResultJackpot extends Command
 
                 $balls = $this->resultBalls($last_jackpot->filter('.balls')->children('.ball'));
                 $balls['date'] = $date;
-                $balls['prize'] = trim($last_jackpot->filter('.jackpot')->filter('span')->text());
+
                 $data[$j] = $balls;
                 ++$j;
                 $jackpots = $crawler->filter('.results-med')->each(function ($node) {
