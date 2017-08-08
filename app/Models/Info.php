@@ -9,6 +9,7 @@ class Info extends Model
     protected $fillable = [
         'id',
         'name',
+        'country',
         'description',
         'country',
         'state',
