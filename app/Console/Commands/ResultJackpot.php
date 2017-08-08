@@ -181,8 +181,8 @@ class ResultJackpot extends Command
                 $date = $last_jackpot->filter('.date')->text();
                 $date = date("Y-m-d",strtotime($date));
                 $update = false;
+                $balls = $this->resultBalls($last_jackpot->filter('.balls')->children('.ball'));
                 $balls['prize'] = trim($last_jackpot->filter('.jackpot')->filter('span')->text());
-
                 if($this->provider['class']::where('date',$date)->count()){
                    $last_row = $this->provider['class']::where('date',$date)->first();
                    if(!$this->provider['class']::where('prize','TBC')->count()){
@@ -196,7 +196,6 @@ class ResultJackpot extends Command
                    }
                 }
 
-                $balls = $this->resultBalls($last_jackpot->filter('.balls')->children('.ball'));
                 $balls['date'] = $date;
 
                 $data[$j] = $balls;
@@ -320,8 +319,11 @@ class ResultJackpot extends Command
         foreach ($jackpots as $jackpot){
             if(!empty($jackpot)){
                 if($this->provider['class']::where('date',$jackpot['date'])->count()){
+                    $last_row = $this->provider['class']::where('date',$jackpot['date'])->first();
                     if(!$this->provider['class']::where('prize','TBC')->count()){
-                        break;
+                        if($last_row->prize == $jackpot['prize']){
+                            break;
+                        }
                     }
                 }
                 $data[$j] = $jackpot;
