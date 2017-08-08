@@ -241,6 +241,7 @@ class CreateInfosTable extends Migration
         Schema::create('infos', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->string('country');
             $table->string('state')->nullable();
             $table->integer('main_min')->nullable();
             $table->integer('main_max')->nullable();
@@ -261,6 +262,7 @@ class CreateInfosTable extends Migration
             \App\Models\Info::create(array(
                'name' => $info->name,
                'state' => $info->state,
+               'country' => $info->country,
                'main_min' => $info->main_min,
                'main_max' => $info->main_max,
                'main_drawn' => $info->main_drawn,

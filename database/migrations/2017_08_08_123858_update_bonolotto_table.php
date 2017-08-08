@@ -28,9 +28,9 @@ class UpdateBonolottoTable extends Migration
     public function down()
     {
         Schema::table('bono_lottos', function (Blueprint $table) {
-            $table->dropColumn('extra_number')->nullable();
-            $table->integer('comp')->after('numbers')->nullable();
-            $table->integer('reint')->after('comp')->nullable();
+            $table->integer('extra_number')->nullable();
+            $table->dropColumn('comp')->after('numbers')->nullable();
+            $table->dropColumn('reint')->after('comp')->nullable();
         });
     }
 }

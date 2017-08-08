@@ -111,6 +111,25 @@ class ApiController extends Controller
 
     public function info(){
         $infos = Info::all();
-        return response()->json($infos);
+        $data = array();
+        foreach ($infos as $info){
+            $data[] = array(
+                'name' => $info->name,
+                'state' => $info->state,
+                'country' => $info->country,
+                'main_min' => $info->main_min,
+                'main_max' => $info->main_max,
+                'main_drawn' => $info->main_drawn,
+                'bonus_min' => $info->bonus_min,
+                'bonus_max' => $info->bonus_max,
+                'bonus_drawn' => $info->bonus_drawn,
+                'same_balls' => $info->same_balls,
+                'digits' => $info->digits,
+                'drawn' => $info->drawn,
+                'is_option' => $info->is_option,
+                'option_desc' => $info->option_desc,
+            );
+        }
+        return response()->json($data);
     }
 }
