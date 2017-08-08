@@ -134,16 +134,5 @@ class ExpandJackpot extends Command
         return number_format($n);
     }
 
-    private function countdown($date){
-        // Create two new DateTime-objects...
-        $date1 = new \DateTime(date("c",strtotime($date)));
-        $date2 = new \DateTime(date("c",time()));
 
-        $diff = $date2->diff($date1);
-        $hour = $diff->format('%a')*24 + $diff->format('%h');
-        $minutes = $diff->format('%i');
-        $seconds = $diff->format('%s');
-        $countdown = $hour .":".$minutes. ":". $seconds;
-        return $countdown;
-    }
 }

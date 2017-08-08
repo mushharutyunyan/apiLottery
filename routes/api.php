@@ -18,7 +18,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('jwt.auth');
 
 
-Route::group(['prefix' => 'jackpot','middleware' => ['cors','jwt.auth']],function () {
+Route::group(['prefix' => 'jackpot','middleware' => ['cors']],function () {
     Route::get('/','ApiController@jackpot');
     Route::get('/results/{provider}','ApiController@results');
     Route::get('/results/all/last','ApiController@lastResult');
