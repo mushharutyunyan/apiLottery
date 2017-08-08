@@ -1,10 +1,10 @@
 <?php
 return array(
     /** set your paypal credential **/
-//    'client_id' =>'AT4Xp1jh8-bJc5_-kBlVsFoCQEUSXLNoW-EOejtzDHWSsRIWV-VuRpGo5Xy18PahVj1__xxYEO-dyMhz',
-//    'secret' => 'EBLtHYGM18mjcWLKvBN-_ML49IM7zkBDKoGxQVsavuBOe5zxADwdeMa0UA8rF3sMzLZANrVJ9hvFdNqu',
-    'client_id' =>'AavFy1PBhCzLC27KJLCgi9054wswB-AMJebBvPH3md5jR9AhI87XZYAKX-YedFhQikfPGuve4ApjJMCp',
-    'secret' => 'EMX5H8QrCHibfXLrzjK4h2n3EC7294qpEQYKrYc8iFdPNp8almQM52tG-3qEzyt8L4HjBe7up3ZanMHT',
+    'client_id' =>'AT4Xp1jh8-bJc5_-kBlVsFoCQEUSXLNoW-EOejtzDHWSsRIWV-VuRpGo5Xy18PahVj1__xxYEO-dyMhz',
+    'secret' => 'EBLtHYGM18mjcWLKvBN-_ML49IM7zkBDKoGxQVsavuBOe5zxADwdeMa0UA8rF3sMzLZANrVJ9hvFdNqu',
+//    'client_id' =>'AavFy1PBhCzLC27KJLCgi9054wswB-AMJebBvPH3md5jR9AhI87XZYAKX-YedFhQikfPGuve4ApjJMCp',
+//    'secret' => 'EMX5H8QrCHibfXLrzjK4h2n3EC7294qpEQYKrYc8iFdPNp8almQM52tG-3qEzyt8L4HjBe7up3ZanMHT',
     /**
      * SDK configuration
      */
@@ -12,7 +12,7 @@ return array(
         /**
          * Available option 'sandbox' or 'live'
          */
-        'mode' => 'sandbox',
+        'mode' => 'live',
         /**
          * Specify the max request time in seconds
          */
