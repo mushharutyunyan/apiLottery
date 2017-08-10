@@ -28,6 +28,12 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL,"http://www.lottoapi.co/api/jackpot?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImlzcyI6Imh0dHA6Ly93d3cubG90dG9hcGkuY28iLCJpYXQiOjE1MDE2Nzc3NTYsImV4cCI6MTUwNTI3Nzc1NiwibmJmIjoxNTAxNjc3NzU2LCJqdGkiOiI0Z0IwRExncWpOYXA2YUozIn0.JsB3hjHTGx4vdVzDZBlGB11zyHeI5ia9Cbt0oZ1GPI4");
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $server_output = curl_exec ($ch);
+        print_r($server_output);die;
         if(empty(Auth::user()['api_token'])){
             $token = JWTAuth::fromUser(Auth::user());
             $user = Auth::user();
