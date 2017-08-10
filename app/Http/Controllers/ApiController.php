@@ -40,6 +40,7 @@ class ApiController extends Controller
                 'p' => $jackpot->prize,
                 'd' => date("F d, Y G:i:s", strtotime($jackpot->date . "+3 hours")));
         }
+        Auth::logout();
         return response()->json($data);
     }
 
@@ -71,6 +72,7 @@ class ApiController extends Controller
             }
             $i++;
         }
+        Auth::logout();
         return response()->json($result);
     }
     public function lastResult(){
@@ -106,6 +108,7 @@ class ApiController extends Controller
             }
             $j++;
         }
+        Auth::logout();
         return response()->json($result);
     }
 
@@ -130,6 +133,7 @@ class ApiController extends Controller
                 'option_desc' => $info->option_desc,
             );
         }
+        Auth::logout();
         return response()->json($data);
     }
 }
