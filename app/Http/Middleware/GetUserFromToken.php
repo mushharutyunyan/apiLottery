@@ -21,7 +21,7 @@ class GetUserFromToken extends \Tymon\JWTAuth\Middleware\BaseMiddleware
 
         try {
             if(Auth::check()){
-                Auth::logout();
+                $this->auth->logout();
             }
             $user = $this->auth->authenticate($token);
         } catch (TokenExpiredException $e) {
