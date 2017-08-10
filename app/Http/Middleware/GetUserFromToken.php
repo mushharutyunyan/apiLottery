@@ -2,9 +2,8 @@
 
 namespace App\Http\Middleware;
 use Illuminate\Support\Facades\Auth;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-class GetUserFromToken extends \Tymon\JWTAuth\Middleware\BaseMiddleware
+use App\Models\User;
+class GetUserFromToken
 {
     /**
      * Handle an incoming request.
@@ -15,26 +14,21 @@ class GetUserFromToken extends \Tymon\JWTAuth\Middleware\BaseMiddleware
      */
     public function handle($request, \Closure $next)
     {
-        if (! $token = $this->auth->setRequest($request)->getToken()) {
-            return $this->respond('tymon.jwt.absent', 'token_not_provided', 400);
+        $data = $request->all();
+        if (! User::where('api_token',$data['token'])->count()) {
+            return response()->json(['error' => 'token_not_provided'],400);
         }
-
-        try {
-            if(Auth::check()){
-                $this->auth->logout();
-            }
-            $user = $this->auth->authenticate($token);
-        } catch (TokenExpiredException $e) {
-            return $this->respond('tymon.jwt.expired', 'token_expired', $e->getStatusCode(), [$e]);
-        } catch (JWTException $e) {
-            return $this->respond('tymon.jwt.invalid', 'token_invalid', $e->getStatusCode(), [$e]);
-        }
-
+        $user = User::where('api_token',$data['token'])->first();
         if (! $user) {
-            return $this->respond('tymon.jwt.user_not_found', 'user_not_found', 404);
+            return response()->json(['error' => 'user_not_found'], 404);
         }
-
-        $this->events->fire('tymon.jwt.valid', $user);
+        if($user->id != 2){// for Maor
+            if(!$user->count_requests){
+                return response()->json(['error' => 'Requests count is over']);
+            }
+            $user->count_requests = $user->count_requests - 1;
+            $user->save();
+        }
 
         return $next($request);
     }

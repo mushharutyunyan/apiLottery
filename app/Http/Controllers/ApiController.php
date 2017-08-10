@@ -23,14 +23,8 @@ use Illuminate\Support\Facades\Auth;
 class ApiController extends Controller
 {
     public function jackpot(){
-        $user = Auth::user();
-        if($user->id != 2){// for Maor
-            if(!$user->count_requests){
-                return response()->json(['error' => 'Requests count is over']);
-            }
-            $user->count_requests = $user->count_requests - 1;
-            $user->save();
-        }
+
+
         $now = date('Y-m-d H:i:s');
         $providers = Jackpot::$providers;
         foreach($providers as $provider => $link) {
@@ -40,19 +34,11 @@ class ApiController extends Controller
                 'p' => $jackpot->prize,
                 'd' => date("F d, Y G:i:s", strtotime($jackpot->date . "+3 hours")));
         }
-        Auth::logout();
         return response()->json($data);
     }
 
     public function results($provider,$last = null){
-        $user = Auth::user();
-        if($user->id != 2){// for Maor
-            if(!$user->count_requests){
-                return response()->json(['error' => 'Requests count is over']);
-            }
-            $user->count_requests = $user->count_requests - 1;
-            $user->save();
-        }
+
         $rows = 10;
         $response_fields = array(
             'date' => 'draw_date',
@@ -72,18 +58,10 @@ class ApiController extends Controller
             }
             $i++;
         }
-        Auth::logout();
         return response()->json($result);
     }
     public function lastResult(){
-        $user = Auth::user();
-        if($user->id != 2){// for Maor
-            if(!$user->count_requests){
-                return response()->json(['error' => 'Requests count is over']);
-            }
-            $user->count_requests = $user->count_requests - 1;
-            $user->save();
-        }
+
         $rows = 1;
         $providers = ResultJackpot::$providers;
         $response_fields = array(
@@ -108,7 +86,6 @@ class ApiController extends Controller
             }
             $j++;
         }
-        Auth::logout();
         return response()->json($result);
     }
 
@@ -133,7 +110,6 @@ class ApiController extends Controller
                 'option_desc' => $info->option_desc,
             );
         }
-        Auth::logout();
         return response()->json($data);
     }
 }
