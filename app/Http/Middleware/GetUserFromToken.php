@@ -23,7 +23,7 @@ class GetUserFromToken
             return response()->json(['error' => 'user_not_found'], 404);
         }
 
-        if($user->id != 3){// for Maor
+        if($user->id != 7){// for Maor
             if(!$user->count_requests){
                 return response()->json(['error' => 'Requests count is over']);
             }
