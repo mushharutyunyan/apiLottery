@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Auth;
 class ApiController extends Controller
 {
     public function jackpot(){
-
+        print_r("Asdasd");
 
         $now = date('Y-m-d H:i:s');
         $providers = Jackpot::$providers;
