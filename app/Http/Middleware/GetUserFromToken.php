@@ -14,7 +14,6 @@ class GetUserFromToken
      */
     public function handle($request, \Closure $next)
     {
-        dd("asdasd");
         $data = $request->all();
         if (! User::where('api_token',$data['token'])->count()) {
             return response()->json(['error' => 'token_not_provided'],400);
@@ -23,6 +22,8 @@ class GetUserFromToken
         if (! $user) {
             return response()->json(['error' => 'user_not_found'], 404);
         }
+        dd("asdasd");
+
         if($user->id != 2){// for Maor
             if(!$user->count_requests){
                 return response()->json(['error' => 'Requests count is over']);
