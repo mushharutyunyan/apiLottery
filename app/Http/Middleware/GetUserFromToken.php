@@ -19,10 +19,11 @@ class GetUserFromToken
             return response()->json(['error' => 'token_not_provided'],400);
         }
         $user = User::where('api_token',$data['token'])->first();
+        print_r($user);
+        dd("asdasd");
         if (! $user) {
             return response()->json(['error' => 'user_not_found'], 404);
         }
-        dd("asdasd");
 
         if($user->id != 2){// for Maor
             if(!$user->count_requests){
