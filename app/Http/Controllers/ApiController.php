@@ -23,13 +23,11 @@ use Illuminate\Support\Facades\Auth;
 class ApiController extends Controller
 {
     public function jackpot(){
-        print_r("Asdasd");die;
 
         $now = date('Y-m-d H:i:s');
         $providers = Jackpot::$providers;
         foreach($providers as $provider => $link) {
             $jackpot = Jackpot::where('provider', $provider)->orderBy('date', 'DESC')->first();
-            print_R($jackpot);die;
 //                $countdown = $this->countdown($jackpot->date);
             $data[] = array('n' => $jackpot->provider,
                 'p' => $jackpot->prize,

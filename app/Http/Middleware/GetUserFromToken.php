@@ -14,7 +14,6 @@ class GetUserFromToken
      */
     public function handle($request, \Closure $next)
     {
-        dd("asdasd");
         $data = $request->all();
         if (! User::where('api_token',$data['token'])->count()) {
             return response()->json(['error' => 'token_not_provided'],400);
