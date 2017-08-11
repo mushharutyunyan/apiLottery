@@ -1,12 +1,9 @@
 <?php
 use App\Models\User;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//Auth::routes();
 
-Auth::routes();
-
+Route::get('/login', 'Auth\LoginController@showLoginForm');
 Route::group(['middleware' => 'checkAuth'],function () {
     Route::get('/', 'HomeController@index');
     Route::group(['middleware' => 'admin'],function () {
