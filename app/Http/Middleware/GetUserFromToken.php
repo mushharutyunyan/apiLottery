@@ -18,9 +18,7 @@ class GetUserFromToken
         if (! User::where('api_token',$data['token'])->count()) {
             return response()->json(['error' => 'token_not_provided'],400);
         }
-        print_r($data['token']);
         $user = User::where('api_token',$data['token'])->first();
-        dd("asdasd");
         if (! $user) {
             return response()->json(['error' => 'user_not_found'], 404);
         }
