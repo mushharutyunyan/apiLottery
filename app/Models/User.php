@@ -13,7 +13,7 @@ class User extends Authenticatable
 
     const ADMIN = 1;
     const USER = 2;
-
+    public static $role = array(1 => 'Admin', 2 => 'User');
     /**
      * The attributes that are mass assignable.
      *

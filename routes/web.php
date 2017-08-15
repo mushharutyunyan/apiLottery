@@ -5,6 +5,7 @@ Route::group(['middleware' => 'checkAuth'],function () {
     Route::get('/', 'HomeController@index');
     Route::group(['middleware' => 'admin'],function () {
         Route::resource('/plan', 'PlansController');
+        Route::resource('/user', 'UserController');
         Route::get('/plan/makeMain/{id}', 'PlansController@makeMain');
     });
     Route::get('/plans', 'HomeController@plans');

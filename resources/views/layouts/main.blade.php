@@ -56,6 +56,7 @@
                         <li><a href="{{ url('/register') }}">Register</a></li>
                     @else
                     @if(Auth::user()['role'] == \App\Models\User::ADMIN)
+                    <li><a href="{{ url('/user') }}">Users</a></li>
                     <li><a href="{{ url('/plan') }}">Change Plan</a></li>
                     @endif
                     <li><a href="{{ url('/payments') }}">Payments</a></li>
