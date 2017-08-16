@@ -27,6 +27,7 @@
                                 <th>Role</th>
                                 <th>Email</th>
                                 <th>Calls</th>
+                                <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -36,6 +37,7 @@
                                     <td>{{\App\Models\User::$role[$user->role]}}</td>
                                     <td>{{$user->email}}</td>
                                     <td>{{$user->count_requests}}</td>
+                                    <td><a href="/user/{{$user->id}}/edit" class="btn btn-default">Edit</a></td>
                                 </tr>
                             @endforeach
                             </tbody>
