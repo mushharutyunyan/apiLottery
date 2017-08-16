@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 
-Auth::routes();
+
 
 Route::group(['middleware' => 'checkAuth'],function () {
     Route::get('/', 'HomeController@index');
