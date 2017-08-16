@@ -13,14 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('jwt.auth');
 
 
-Route::group(['prefix' => 'jackpot','middleware' => ['token.auth']],function () {
-    Route::get('/','ApiController@jackpot');
-    Route::get('/results/{provider}','ApiController@results');
-    Route::get('/results/all/last','ApiController@lastResult');
-    Route::get('/info','ApiController@info');
-});
+
