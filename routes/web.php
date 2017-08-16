@@ -17,6 +17,11 @@ Route::group(['middleware' => 'checkAuth'],function () {
         Route::get('/paypal/{response}', 'PaymentController@getPaypalPaymentStatus');
     });
 });
-
+Route::group(['prefix' => 'jackpot','middleware' => ['token.auth']],function () {
+    Route::get('/','ApiController@jackpot');
+    Route::get('/results/{provider}','ApiController@results');
+    Route::get('/results/all/last','ApiController@lastResult');
+    Route::get('/info','ApiController@info');
+});
 Route::get('/verifyemail/{token}', 'Auth\RegisterController@verify');
 
