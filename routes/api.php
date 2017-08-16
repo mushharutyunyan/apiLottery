@@ -15,4 +15,10 @@ use Illuminate\Http\Request;
 
 
 
-
+// API ROUTES
+Route::group(['prefix' => 'jackpot','middleware' => ['token.auth']],function () {
+    Route::get('/','ApiController@jackpot');
+    Route::get('/results/{provider}','ApiController@results');
+    Route::get('/results/all/last','ApiController@lastResult');
+    Route::get('/info','ApiController@info');
+});
