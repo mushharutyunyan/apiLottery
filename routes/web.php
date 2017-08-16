@@ -1,5 +1,5 @@
 <?php
-
+Auth::routes();
 
 
 Route::group(['middleware' => 'checkAuth'],function () {
