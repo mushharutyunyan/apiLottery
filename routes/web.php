@@ -2,7 +2,6 @@
 //Auth::routes();
 
 
-Route::get('/', 'HomeController@index');
 Route::group(['middleware' => 'checkAuth'],function () {
     Route::get('/', 'HomeController@index');
     Route::group(['middleware' => 'admin'],function () {
