@@ -13,6 +13,9 @@ use Illuminate\Http\Request;
 |
 */
 
+Auth::routes();
+Route::get('/', 'HomeController@index');
+
 
 // API ROUTES
 Route::group(['prefix' => 'jackpot','middleware' => ['token.auth']],function () {
