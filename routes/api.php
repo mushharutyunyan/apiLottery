@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 
-
+Auth::routes();
 Route::get('/', 'HomeController@index');
 
 
