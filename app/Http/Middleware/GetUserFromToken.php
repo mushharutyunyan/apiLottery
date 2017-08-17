@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\CallHistory;
 class GetUserFromToken
 {
     /**
@@ -26,6 +27,17 @@ class GetUserFromToken
         if($user->id != 7){// for Maor
             if(!$user->count_requests){
                 return response()->json(['error' => 'Requests count is over']);
+            }
+            if(CallHistory::where('user_id',$user->id)->count()){
+                $call_history = CallHistory::where('user_id',$user->id)->first();
+                CallHistory::where('user_id',$user->id)->update(array(
+                   'calls' =>  ($call_history->calls + 1)
+                ));
+            }else{
+                CallHistory::create(array(
+                    'user_id' => $user->id,
+                    'calls' => 1
+                ));
             }
             $user->count_requests = $user->count_requests - 1;
             $user->save();

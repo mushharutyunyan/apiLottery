@@ -10,7 +10,7 @@ class Payment extends Model
     const WRONG = 2;
     const SUCCESS = 3;
     public static $status = [ 1 => 'Processing','Wrong','Success'];
-    protected $fillable = ['id','user_id','plan_id','paymentId','cart','status'];
+    protected $fillable = ['id','user_id','plan_id','calls','paymentId','cart','status'];
 
     public function user()
     {

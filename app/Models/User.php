@@ -31,4 +31,14 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function payment()
+    {
+        return $this->hasMany('App\Models\Payment','user_id');
+    }
+
+    public function history()
+    {
+        return $this->hasMany('App\Models\CallHistory','user_id');
+    }
 }

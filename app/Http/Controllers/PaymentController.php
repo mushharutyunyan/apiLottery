@@ -139,7 +139,8 @@ class PaymentController extends Controller
             /** Here Write your database logic like that insert record or value in database if you want **/
             Payment::where('paymentId',$payment_id)->update(array(
                 'status' => Payment::SUCCESS,
-                'cart' => $result->cart
+                'cart' => $result->cart,
+                'calls' => $payment->plan->calls
             ));
             $payment = Payment::where('paymentId',$payment_id)->first();
             User::where("id",$payment->user->id)->update(array('count_requests' => ($payment->user->count_requests + $payment->plan->calls)));

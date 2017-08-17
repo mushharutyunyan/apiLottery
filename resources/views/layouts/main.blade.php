@@ -105,6 +105,41 @@
 
     {{--<div id="gotoTop" class="fa fa-angle-up"></div>--}}
 <!-- Scripts -->
-<script src="/js/app.js"></script>
+<script src="/assets/js/jquery.js"></script>
+<script src="/assets/js/bootstrap.min.js"></script>
+<script>
+    $('.watch-user').on("click",function(){
+        $.ajax({
+            url: '/user/history',
+            type: 'POST',
+            data: {id:$(this).attr('data-id'),_token:$(this).parent().children('input[name="_token"]').val()},
+            dataType: 'json',
+            success: function(data){
+                $('.payment-history-table tbody').html('');
+                $('.history-list').html('');
+                $('.history-list').append('<li class="list-group-item">Calls left: '+data.count_requests+'</li>');
+                var calls = 0;
+                if(data.history.length){
+                    calls = data.history.calls;
+                }
+                $('.history-list').append('<li class="list-group-item">Used Calls: '+calls+'</li>');
+                if(data.payments.length){
+                    $.each(data.payments,function(key,value){
+                        $('.payment-history-table tbody').append(
+                            '<tr>' +
+                                '<td>'+value.plan+'</td>' +
+                                '<td>'+value.calls+'</td>' +
+                                '<td>'+value.paymentId+'</td>' +
+                                '<td>'+value.cart+'</td>' +
+                                '<td>'+value.status+'</td>' +
+                            '</tr>'
+                        )
+                    });
+                }
+                $("#userHistoryModal").modal('show');
+            }
+        })
+    })
+</script>
 </body>
 </html>

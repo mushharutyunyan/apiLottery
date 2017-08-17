@@ -37,7 +37,14 @@
                                     <td>{{\App\Models\User::$role[$user->role]}}</td>
                                     <td>{{$user->email}}</td>
                                     <td>{{$user->count_requests}}</td>
-                                    <td><a href="/user/{{$user->id}}/edit" class="btn btn-default">Edit</a></td>
+                                    <td>
+                                        <form>
+                                            <input type="hidden" name="_token" value="{{csrf_token()}}">
+                                            <a href="/user/{{$user->id}}/edit" class="btn btn-default">Edit</a>
+                                            <button type="button" data-id="{{$user->id}}" class="btn btn-default watch-user">Watch</button>
+                                        </form>
+                                    </td>
+
                                 </tr>
                             @endforeach
                             </tbody>
@@ -47,4 +54,40 @@
                 </div>
         </div>
     </div>
+
+    <!-- Modal -->
+    <div id="userHistoryModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">User History</h4>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group history-list">
+                    </ul>
+                    <h4>Payments</h4>
+                    <table class="table table-hover payment-history-table">
+                        <thead>
+                            <tr>
+                                <th>Plan</th>
+                                <th>Calls</th>
+                                <th>PaymentId</th>
+                                <th>Cart</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
 @endsection

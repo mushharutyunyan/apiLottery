@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Auth;
@@ -30,5 +31,25 @@ class UserController extends Controller
             'count_requests' => $data['count_requests']
         ));
         return redirect('/user')->with(['status' => 'User has been updated successfully']);
+    }
+
+    public function history(Request $request){
+        $data = $request->all();
+        $user = User::where('id',$data['id'])->first();
+        $user->history;
+        $payments = array();
+        if($user->payment->count()){
+            foreach ($user->payment as $payment){
+                $payments[] = array(
+                    'plan' => $payment->plan->name,
+                    'calls' => $payment->calls,
+                    'paymentId' => $payment->paymentId,
+                    'cart' => $payment->cart,
+                    'status' => Payment::$status[$payment->status]
+                );
+            }
+        }
+        $user->payments = $payments;
+        return response()->json($user);
     }
 }
