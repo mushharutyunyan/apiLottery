@@ -40,9 +40,13 @@ class UserController extends Controller
         $payments = array();
         if($user->payment->count()){
             foreach ($user->payment as $payment){
+                $calls = $payment->plan->calls;
+                if($payment->calls){
+                    $calls = $payment->calls;
+                }
                 $payments[] = array(
                     'plan' => $payment->plan->name,
-                    'calls' => $payment->calls,
+                    'calls' => $calls,
                     'paymentId' => $payment->paymentId,
                     'cart' => $payment->cart,
                     'status' => Payment::$status[$payment->status]

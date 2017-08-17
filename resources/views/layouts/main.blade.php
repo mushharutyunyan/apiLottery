@@ -125,12 +125,16 @@
                 $('.history-list').append('<li class="list-group-item">Used Calls: '+calls+'</li>');
                 if(data.payments.length){
                     $.each(data.payments,function(key,value){
+                        var cart = '';
+                        if(value.cart){
+                            cart = value.cart;
+                        }
                         $('.payment-history-table tbody').append(
                             '<tr>' +
                                 '<td>'+value.plan+'</td>' +
                                 '<td>'+value.calls+'</td>' +
                                 '<td>'+value.paymentId+'</td>' +
-                                '<td>'+value.cart+'</td>' +
+                                '<td>'+cart+'</td>' +
                                 '<td>'+value.status+'</td>' +
                             '</tr>'
                         )
