@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\ExpandJackpot::class,
-        Commands\ResultJackpot::class
+        Commands\ResultJackpot::class,
+        Commands\EmailCallsNotification::class
     ];
 
     /**
@@ -27,6 +28,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('command:expand-jackpot')->everyMinute();
+        $schedule->command('command:email-calls')->everyMinute();
         $schedule->command('command:result-jackpot')->cron('0 */12 * * *');
     }
 

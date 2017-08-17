@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Auth;
 use App\Models\User;
 use JWTAuth;
-
+use Mail;
 class HomeController extends Controller
 {
     /**
@@ -28,6 +28,7 @@ class HomeController extends Controller
      */
     public function index()
     {
+
         if(empty(Auth::user()['api_token'])){
             $token = JWTAuth::fromUser(Auth::user());
             $user = Auth::user();
