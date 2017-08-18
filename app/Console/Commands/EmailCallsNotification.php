@@ -40,6 +40,14 @@ class EmailCallsNotification extends Command
     {
         $users = User::where('count_requests','<=',10)->get();
         foreach($users as $user){
+            if($user->call_email_notification){
+                if(strtotime($user->call_email_notification) > strtotime($user->updated_at)){
+                    continue;
+                }
+            }
+            User::where('id',$user->id)->update(array(
+                'call_email_notification' => date("Y-m-d H:i:s")
+            ));
             Mail::send('email.notification', array('count' => $user->count_requests), function($message) use($user)
             {
                 $message->to($user->email, '')->subject('Lottoapi');

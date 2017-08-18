@@ -25,6 +25,9 @@ class ExpandJackpot extends Command
     protected $currencies = array(
         'CAD' => 'CA$',
         'AUD' => 'AU$',
+        'COP' => 'COP',
+        'NZD' => 'NZD',
+        'R' => 'R',
         '£' => '£',
         '$' => '$',
         '€' => '€',
