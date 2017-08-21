@@ -2,9 +2,15 @@
 
 namespace App\Console\Commands;
 
+use App\Models\AustraliaSaturdayLotto;
 use App\Models\CalifornaSuperLotto;
 use App\Models\EuroMillions;
+use App\Models\IrelandLotto;
 use App\Models\MegaMillion;
+use App\Models\NewZealandPowerball;
+use App\Models\Ontario49;
+use App\Models\SouthAfricaLotto;
+use App\Models\SouthAfricaPowerball;
 use Illuminate\Console\Command;
 use Goutte\Client;
 use App\Models\SuperenaLotto;
@@ -123,6 +129,43 @@ class ResultJackpot extends Command
                 'powerball' => 'powerball',
             )
         ),
+        'australiasaturdaylotto' => array(
+            'link' => 'https://www.lotto.net/australia-saturday-lotto/results',
+            'class' => AustraliaSaturdayLotto::class,
+            'alter_fields' => array(
+                'supp' => 'supplementary',
+                'supp2' => 'supplementary'
+            )
+        ),
+        'newzealandpowerball' => array(
+            'link' => 'https://www.lotto.net/new-zealand-powerball/results',
+            'class' => NewZealandPowerball::class,
+            'alter_fields' => array(
+                'bonus' => 'bonus-ball',
+                'supp2' => 'powerball'
+            )
+        ),
+        'southafricalotto' => array(
+            'link' => 'https://www.lotto.net/south-africa-lotto/results',
+            'class' => SouthAfricaLotto::class,
+            'alter_fields' => array(
+                'bonus' => 'bonus-ball'
+            )
+        ),
+        'irelandlotto' => array(
+            'link' => 'https://www.lottery.ie/dbg/results/view?game=lotto&draws=0',
+            'class' => IrelandLotto::class,
+            'alter_fields' => array(
+                'bonus' => 'bonus'
+            )
+        ),
+        'ontario49' => array(
+            'link' => 'https://www.lottery.com/jackpots/can/ontario49',
+            'class' => Ontario49::class,
+            'alter_fields' => array(
+                'bonus' => 'bonus'
+            )
+        ),
         'laprimitiva' => array(
             'link' => 'https://www.onelotto.com/lottery-results/spanish-la-primitiva/draw-history?last_days=30&page=1&per_page=10',
             'class' => LaPrimitiva::class,
@@ -173,45 +216,53 @@ class ResultJackpot extends Command
         foreach($providers as $key => $provider){
             $j = 0;
             $this->provider = $provider;
-
-            $crawler = $this->client->request('GET', $this->provider['link']);
             $this->alter_fields = $this->provider['alter_fields'];
-            if($crawler->filter('.results-big')->count()){
-                $last_jackpot = $crawler->filter('.results-big');
-                $date = $last_jackpot->filter('.date')->text();
-                $date = date("Y-m-d",strtotime($date));
-                $update = false;
-                $balls = $this->resultBalls($last_jackpot->filter('.balls')->children('.ball'));
-                $balls['prize'] = trim($last_jackpot->filter('.jackpot')->filter('span')->text());
-                if($this->provider['class']::where('date',$date)->count()){
-                   $last_row = $this->provider['class']::where('date',$date)->first();
-                   if(!$this->provider['class']::where('prize','TBC')->count()){
-                       if($last_row->prize != $balls['prize']){
-                           $update = true;
-                       }else{
-                            continue;
-                       }
-                   }else{
-                       $update = true;
-                   }
-                }
-
-                $balls['date'] = $date;
-
-                $data[$j] = $balls;
-                ++$j;
-                $jackpots = $crawler->filter('.results-med')->each(function ($node) {
-                    $date = $node->filter('.date')->text();
-                    $date = date("Y-m-d",strtotime($date));
-                    $balls = $this->resultBalls($node->filter('.balls')->children('.ball'));
-                    $balls['date'] = $date;
-                    $balls['prize'] = trim($node->filter('.jackpot')->filter('span')->text());
-                    return $balls;
-                });
-                $this->dataInsertResults(array($balls),$update);
-                $this->dataInsertResults($jackpots,$update);
+            if($key == 'irelandlotto'){
+                $this->irelandlotto();
+            }elseif($key == 'ontario49'){
+                $this->ontario();
             }else{
-                $this->spanish_lotto();
+                $crawler = $this->client->request('GET', $this->provider['link']);
+                if($crawler->filter('.results-big')->count()){
+                    $last_jackpot = $crawler->filter('.results-big');
+                    $date = $last_jackpot->filter('.date')->text();
+                    $date = date("Y-m-d",strtotime($date));
+                    $update = false;
+                    $balls = $this->resultBalls($last_jackpot->filter('.balls')->children('.ball'));
+                    $balls['prize'] = trim($last_jackpot->filter('.jackpot')->filter('span')->text());
+                    if(SuperenaLotto::where('date',$date)->count()){
+                       $last_row = $this->provider['class']::where('date',$date)->first();
+                       if(!$this->provider['class']::where('prize','TBC')->count()){
+                           if(!$this->provider['class']::where('date',$date)->count()){
+                               continue;
+                           }
+                           if($last_row->prize != $balls['prize']){
+                               $update = true;
+                           }else{
+                                continue;
+                           }
+                       }else{
+                           $update = true;
+                       }
+                    }
+
+                    $balls['date'] = $date;
+
+                    $data[$j] = $balls;
+                    ++$j;
+                    $jackpots = $crawler->filter('.results-med')->each(function ($node) {
+                        $date = $node->filter('.date')->text();
+                        $date = date("Y-m-d",strtotime($date));
+                        $balls = $this->resultBalls($node->filter('.balls')->children('.ball'));
+                        $balls['date'] = $date;
+                        $balls['prize'] = trim($node->filter('.jackpot')->filter('span')->text());
+                        return $balls;
+                    });
+                    $this->dataInsertResults(array($balls),$update);
+                    $this->dataInsertResults($jackpots,$update);
+                }else{
+                    $this->spanish_lotto();
+                }
             }
 
 
@@ -267,6 +318,62 @@ class ResultJackpot extends Command
             $this->provider['class']::create($jackpot);
         }
     }
+    private function irelandlotto(){
+        $crawler = $this->client->request('GET', $this->provider['link']);
+        $balls = $crawler->filter('.matching-draw')->each(function ($node) {
+            $numbers = '';
+            $balls = array();
+            $numbers = $node->filter('.draw-results')->first()->filter('.winning-numbers')->filter('.pick-number')->each(function ($number) {
+                return $number->filter('.pick-number')->filter('input')->attr('value');
+            });
+            $balls['numbers'] = implode(" ",$numbers);
+            foreach($this->alter_fields as $column => $field){
+                $balls[$column] = $node->filter('.'.$field)->filter('input')->attr('value');
+            }
+            $date = $node->filter('h4')->text();
+            $balls['date'] = date('Y-m-d',strtotime($date));
+            $balls['prize'] = $node->filter('.jackpot')->filter('.prize')->text();
+            return $balls;
+        });
+        $this->dataInsertResults($balls,false);
+    }
+    private function ontario(){
+        $crawler = $this->client->request('GET', $this->provider['link']);
+        $balls = $crawler->filter('.moreWinningNumbers')->each(function ($node) {
+            $balls = array();
+            $date = $node->filter('.dateCol')->text();
+            $balls['date'] = date('Y-m-d',strtotime($date));
+            $node->filter('.jackpotCol p')->each(function (Crawler $crawler) {
+                foreach ($crawler as $node) {
+                    $node->parentNode->removeChild($node);
+                }
+            });
+            $prize_text = $node->filter('.jackpotCol')->text();
+            $prize_exp = explode(' ',$prize_text);
+            if(isset($prize_exp[1])){
+                if(preg_match('/million/i',$prize_exp[1])){
+                    $prize = $prize_exp[0].".000.000";
+                }elseif(preg_match('/billion/i',$prize_exp[1])){
+                    $prize = $prize_exp[0].".000.000.000";
+                }
+            }else{
+                $prize = $prize_text;
+            }
+            $balls['prize'] = $prize;
+            $winning_numbers = $node->filter('.lottery-item-winnumbers span')->each(function ($node) {
+                return $node->text();
+            });
+            end($winning_numbers);
+            $key = key($winning_numbers);
+            foreach($this->alter_fields as $column => $field){
+                $balls[$column] = $winning_numbers[$key];
+            }
+            unset($winning_numbers[$key]);
+            $balls['numbers'] = implode(" ",$winning_numbers);
+            return $balls;
+        });
+        $this->dataInsertResults($balls,false);
+    }
 
     private function resultBalls($jackpot_block){
         $balls = $jackpot_block->each(function ($node) {
@@ -318,15 +425,17 @@ class ResultJackpot extends Command
         $j = 0;
         foreach ($jackpots as $jackpot){
             if(!empty($jackpot)){
-                if($this->provider['class']::where('date',$jackpot['date'])->count()){
-                    $last_row = $this->provider['class']::where('date',$jackpot['date'])->first();
-                    if(!$this->provider['class']::where('prize','TBC')->count()){
-                        if($last_row->prize == $jackpot['prize']){
-                            break;
+                if($j <= 9){
+                    if($this->provider['class']::where('date',$jackpot['date'])->count()){
+                        $last_row = $this->provider['class']::where('date',$jackpot['date'])->first();
+                        if(!$this->provider['class']::where('prize','TBC')->count()){
+                            if($last_row->prize == $jackpot['prize']){
+                                break;
+                            }
                         }
                     }
+                    $data[$j] = $jackpot;
                 }
-                $data[$j] = $jackpot;
                 $j++;
             }
         }
