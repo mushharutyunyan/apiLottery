@@ -41,7 +41,7 @@ class EmailCallsNotification extends Command
         $users = User::where('count_requests','<=',10)->get();
         foreach($users as $user){
             if($user->call_email_notification){
-                if(strtotime($user->call_email_notification) > strtotime($user->updated_at)){
+                if(strtotime($user->call_email_notification) >= strtotime($user->updated_at)){
                     continue;
                 }
             }
