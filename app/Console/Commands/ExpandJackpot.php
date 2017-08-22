@@ -57,14 +57,16 @@ class ExpandJackpot extends Command
         foreach($providers as $provider => $link){
             if(Jackpot::where('provider',$provider)->where('date','>=',$now)->where('prize','!=','Not Published')->count()){
                 if(isset(Jackpot::$updated_providers[$provider])){
-                    $updated_provider_class = Jackpot::$updated_providers[$provider];
-                    $date_ended_jackpot = date('Y-m-d',strtotime($now));
-                    if(!$updated_provider_class::where('date',$date_ended_jackpot)->count()){
-                        $old_jack = Jackpot::where('provider',$provider)->where('date','=',$now)->first();
-                        $updated_provider_class::create(array(
-                            'date' => $date_ended_jackpot,
-                            'prize' => $old_jack->prize
-                        ));
+                    $old_jack = Jackpot::where('provider',$provider)->where('date','=',$now)->first();
+                    if($old_jack->count()){
+                        $updated_provider_class = Jackpot::$updated_providers[$provider];
+                        $date_ended_jackpot = date('Y-m-d',strtotime($now));
+                        if(!$updated_provider_class::where('date',$date_ended_jackpot)->count()){
+                            $updated_provider_class::create(array(
+                                'date' => $date_ended_jackpot,
+                                'prize' => $old_jack->prize
+                            ));
+                        }
                     }
                 }
 
