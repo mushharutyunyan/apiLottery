@@ -55,23 +55,8 @@ class ExpandJackpot extends Command
         $now = date("Y-m-d H:i:s",strtotime(date('Y-m-d H:i').":00"));
         $providers = Jackpot::$providers;
         foreach($providers as $provider => $link){
-            if(Jackpot::where('provider',$provider)->where('date','>=',$now)->where('prize','!=','Not Published')->count()){
-                if(isset(Jackpot::$updated_providers[$provider])){
-                    $old_jack = Jackpot::where('provider',$provider)->where('date','=',$now)->first();
-                    if($old_jack){
-                        $updated_provider_class = Jackpot::$updated_providers[$provider];
-                        $date_ended_jackpot = date('Y-m-d',strtotime($now));
-                        if(!$updated_provider_class::where('date',$date_ended_jackpot)->count()){
-                            $updated_provider_class::create(array(
-                                'date' => $date_ended_jackpot,
-                                'prize' => $old_jack->prize
-                            ));
-                        }
-                    }
-                }
 
-                continue;
-            }
+
             $crawler = $client->request('GET', $link);
             if($crawler->filter('.sidebar-right')->count()){
                 $current_jackpot = $crawler->filter('.sidebar-right')->children('.current');
@@ -86,6 +71,9 @@ class ExpandJackpot extends Command
                 $prize = $crawler->filter('.lotto-prize')->text();
             }else{
                 $canonical_source_content = $crawler->filter('meta[name="canonical_source"]')->attr('content');
+                if(!isset(explode('?lotteryid=',$canonical_source_content)[1])){
+                    continue;
+                }
                 $lotteryId = explode('?lotteryid=',$canonical_source_content)[1];
                 $data_string = json_encode(array(
                     'formType' => 0,
@@ -115,6 +103,24 @@ class ExpandJackpot extends Command
                     $prize = $this->currencies[$prize_data[0]].$this->convertPrize(str_replace(",","",$prize_data[1]));
                 }
             }
+            if(Jackpot::where('provider',$provider)->where('date','>=',$now)->where('prize',$prize)->where('prize','!=','Not Published')->count()){
+                if(isset(Jackpot::$updated_providers[$provider])){
+                    $old_jack = Jackpot::where('provider',$provider)->where('date','=',$now)->first();
+                    if($old_jack){
+                        $updated_provider_class = Jackpot::$updated_providers[$provider];
+                        $date_ended_jackpot = date('Y-m-d',strtotime($now));
+                        if(!$updated_provider_class::where('date',$date_ended_jackpot)->count()){
+                            $updated_provider_class::create(array(
+                                'date' => $date_ended_jackpot,
+                                'prize' => $old_jack->prize
+                            ));
+                        }
+                    }
+                }
+
+                continue;
+            }
+
             $rounded = date('H:i:s', round(strtotime(date('H:i:s',strtotime($date)))/60)*60);
             $date = date("Y-m-d",strtotime($date))." ".$rounded;
             if($date == $now){
