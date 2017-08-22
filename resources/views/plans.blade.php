@@ -7,7 +7,7 @@
                 <div class="container clearfix">
                     <div class="dotted-divider"></div>
                     <h2 id="pricing-signup" class="center">Choose your Plan</h2>
-                    <div class="pricing pricing3 clearfix">
+                    <div class="pricing pricing2 clearfix">
                         @foreach($plans as $plan)
                         @if($plan->main)
                             <?php $active = 'best-price'; ?>

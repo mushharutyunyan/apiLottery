@@ -5177,7 +5177,8 @@ button.button span {
 	position: relative;
 }
 
-.pricing3 .pricing-wrap { width: 25%; }
+.pricing2 .pricing-wrap { width: 20%; }
+.pricing3 .pricing-wrap { width: 33.3%; }
 
 .pricing5 .pricing-wrap { width: 20%; }
 
