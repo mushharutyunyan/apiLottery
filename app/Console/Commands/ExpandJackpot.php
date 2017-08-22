@@ -56,7 +56,8 @@ class ExpandJackpot extends Command
         $providers = Jackpot::$providers;
         foreach($providers as $provider => $link){
             if(Jackpot::where('provider',$provider)->where('date','>=',$now)->where('prize','!=','Not Published')->count()){
-                $jackpot = Jackpot::where('provider',$provider)->where('date','>',$now)->first();
+                $old_jack = Jackpot::where('provider',$provider)->where('date','=',$now)->first();
+
                 continue;
             }
             $crawler = $client->request('GET', $link);

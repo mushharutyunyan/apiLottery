@@ -35,4 +35,31 @@ class Jackpot extends Model
         'SouthAfricaPowerball' => 'https://www.thelotter.com/lottery-tickets/south-africa-powerball/?player=0',
         'Ontario49' => 'https://www.thelotter.com/lottery-tickets/ontario-ontario-49/?player=0',
     );
+
+    public static $providerClasses = array(
+        'PowerBall' => PowerBall::class,
+        'MegaMillions' => MegaMillion::class,
+        'EuroMillions' => EuroMillions::class,
+        'SuperEnaLotto' => SuperenaLotto::class,
+        'EuroJackpot' => EuroJackpot::class,
+        'FloridaLotto' => FloridaLotto::class,
+        'CaliforniaSuperLotto' => CalifornaSuperLotto::class,
+        'OzLotto' => OzLotto::class,
+        'U.K.Lotto' => UKLotto::class,
+        'Lotto649' => Lotto649::class,
+        'AustraliaPowerBall' => AustraliaPowerball::class,
+        'LaPrimitiva' => LaPrimitiva::class,
+        'ElGordo' => ElGordo::class,
+        'BonoLoto' => BonoLotto::class,
+//        'FinlandVikingLotto' => ,
+//        'ColumbiaBaLoto' => ,
+        'IrelandLotto' => IrelandLotto::class,
+        'NewZealandPowerball' => NewZealandPowerball::class,
+//        'Cash4Life' => ,
+        'AustraliaSaturdayLotto' => AustraliaSaturdayLotto::class,
+//        'FinlandLotto' => ,
+        'SouthAfricaLotto' => SouthAfricaLotto::class,
+        'SouthAfricaPowerball' => SouthAfricaPowerball::class,
+        'Ontario49' => Ontario49::class,
+    );
 }

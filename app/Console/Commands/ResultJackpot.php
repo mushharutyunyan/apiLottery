@@ -4,7 +4,11 @@ namespace App\Console\Commands;
 
 use App\Models\AustraliaSaturdayLotto;
 use App\Models\CalifornaSuperLotto;
+use App\Models\Cash4Life;
+use App\Models\ColumbiaBaloto;
 use App\Models\EuroMillions;
+use App\Models\FinlandLotto;
+use App\Models\FinlandVikingLotto;
 use App\Models\IrelandLotto;
 use App\Models\MegaMillion;
 use App\Models\NewZealandPowerball;
@@ -49,6 +53,7 @@ class ResultJackpot extends Command
         'superenalotto' => array(
             'link' => 'https://www.lotto.net/superenalotto/results',
             'class' => SuperenaLotto::class,
+            'spanish' => false,
             'alter_fields' => array(
                 'jolly' => 'jolly',
                 'superstar' => 'superstar'
@@ -57,6 +62,7 @@ class ResultJackpot extends Command
         'megamillions' => array(
             'link' => 'https://www.lotto.net/mega-millions/numbers',
             'class' => MegaMillion::class,
+            'spanish' => false,
             'alter_fields' => array(
                 'mega' => 'mega-ball',
                 'megaplier' => 'megaplier',
@@ -65,6 +71,7 @@ class ResultJackpot extends Command
         'euromillions' => array(
             'link' => 'https://www.lotto.net/euromillions/results',
             'class' => EuroMillions::class,
+            'spanish' => false,
             'alter_fields' => array(
                 'luckystar' => 'lucky-star',
                 'luckystar2' => 'lucky-star',
@@ -73,6 +80,7 @@ class ResultJackpot extends Command
         'floridalotto' => array(
             'link' => 'https://www.lotto.net/florida-lotto/numbers',
             'class' => FloridaLotto::class,
+            'spanish' => false,
             'alter_fields' => array(
                 'lotto_xtra' => 'lotto-xtra'
             )
@@ -80,6 +88,7 @@ class ResultJackpot extends Command
         'powerball' => array(
             'link' => 'https://www.lotto.net/powerball/numbers',
             'class' => PowerBall::class,
+            'spanish' => false,
             'alter_fields' => array(
                 'powerball' => 'powerball',
                 'powerplay' => 'power-play'
@@ -88,6 +97,7 @@ class ResultJackpot extends Command
         'californiasuperlotto' => array(
             'link' => 'https://www.lotto.net/california-super-lotto-plus/numbers',
             'class' => CalifornaSuperLotto::class,
+            'spanish' => false,
             'alter_fields' => array(
                 'mega' => 'mega-ball',
             )
@@ -95,6 +105,7 @@ class ResultJackpot extends Command
         'ozlotto' => array(
             'link' => 'https://www.lotto.net/oz-lotto/results',
             'class' => OzLotto::class,
+            'spanish' => false,
             'alter_fields' => array(
                 'supp' => 'supplementary',
                 'supp2' => 'supplementary'
@@ -103,6 +114,7 @@ class ResultJackpot extends Command
         'eurojackpot' => array(
             'link' => 'https://www.lotto.net/eurojackpot/results',
             'class' => EuroJackpot::class,
+            'spanish' => false,
             'alter_fields' => array(
                 'euro' => 'euro',
                 'euro2' => 'euro'
@@ -111,6 +123,7 @@ class ResultJackpot extends Command
         'uklotto' => array(
             'link' => 'https://www.lotto.net/uk-lotto/results',
             'class' => UKLotto::class,
+            'spanish' => false,
             'alter_fields' => array(
                 'bonus' => 'bonus-ball',
             )
@@ -118,6 +131,7 @@ class ResultJackpot extends Command
         'lotto649' => array(
             'link' => 'https://www.lotto.net/canada-lotto-6-49/numbers',
             'class' => Lotto649::class,
+            'spanish' => false,
             'alter_fields' => array(
                 'bonus' => 'bonus-ball',
             )
@@ -125,6 +139,7 @@ class ResultJackpot extends Command
         'australiapowerball' => array(
             'link' => 'https://www.lotto.net/australia-powerball/results',
             'class' => AustraliaPowerball::class,
+            'spanish' => false,
             'alter_fields' => array(
                 'powerball' => 'powerball',
             )
@@ -132,6 +147,7 @@ class ResultJackpot extends Command
         'australiasaturdaylotto' => array(
             'link' => 'https://www.lotto.net/australia-saturday-lotto/results',
             'class' => AustraliaSaturdayLotto::class,
+            'spanish' => false,
             'alter_fields' => array(
                 'supp' => 'supplementary',
                 'supp2' => 'supplementary'
@@ -140,6 +156,7 @@ class ResultJackpot extends Command
         'newzealandpowerball' => array(
             'link' => 'https://www.lotto.net/new-zealand-powerball/results',
             'class' => NewZealandPowerball::class,
+            'spanish' => false,
             'alter_fields' => array(
                 'bonus' => 'bonus-ball',
                 'supp2' => 'powerball'
@@ -148,6 +165,7 @@ class ResultJackpot extends Command
         'southafricalotto' => array(
             'link' => 'https://www.lotto.net/south-africa-lotto/results',
             'class' => SouthAfricaLotto::class,
+            'spanish' => false,
             'alter_fields' => array(
                 'bonus' => 'bonus-ball'
             )
@@ -155,6 +173,7 @@ class ResultJackpot extends Command
         'irelandlotto' => array(
             'link' => 'https://www.lottery.ie/dbg/results/view?game=lotto&draws=0',
             'class' => IrelandLotto::class,
+            'spanish' => false,
             'alter_fields' => array(
                 'bonus' => 'bonus'
             )
@@ -162,13 +181,47 @@ class ResultJackpot extends Command
         'ontario49' => array(
             'link' => 'https://www.lottery.com/jackpots/can/ontario49',
             'class' => Ontario49::class,
+            'spanish' => false,
             'alter_fields' => array(
                 'bonus' => 'bonus'
+            )
+        ),
+        'finlandlotto' => array(
+            'link' => 'https://www.thelotter.com/lottery-results/finland-lotto/',
+            'class' => FinlandLotto::class,
+            'spanish' => false,
+            'alter_fields' => array(
+                'extra_number' => 'results-ball-bonus',
+            )
+        ),
+        'finlandvikinglotto' => array(
+            'link' => 'https://www.thelotter.com/lottery-results/finland-viking-lotto/',
+            'class' => FinlandVikingLotto::class,
+            'spanish' => false,
+            'alter_fields' => array(
+                'extra_number' => 'results-ball-additional',
+            )
+        ),
+        'columbiabaloto' => array(
+            'link' => 'https://www.thelotter.com/lottery-results/colombia-baloto/',
+            'class' => ColumbiaBaloto::class,
+            'spanish' => false,
+            'alter_fields' => array(
+                'extra_number' => 'results-ball-additional',
+            )
+        ),
+        'cash4life' => array(
+            'link' => 'https://www.thelotter.com/lottery-results/cash4life/',
+            'class' => Cash4Life::class,
+            'spanish' => false,
+            'alter_fields' => array(
+                'extra_number' => 'results-ball-additional',
             )
         ),
         'laprimitiva' => array(
             'link' => 'https://www.onelotto.com/lottery-results/spanish-la-primitiva/draw-history?last_days=30&page=1&per_page=10',
             'class' => LaPrimitiva::class,
+            'spanish' => true,
             'alter_fields' => array(
                 'comp' => 'comp',
                 'reimb' => 'reimb',
@@ -177,6 +230,7 @@ class ResultJackpot extends Command
         'elgordo' => array(
             'link' => 'https://www.onelotto.com/lottery-results/spanish-el-gordo/draw-history?last_days=30&page=1&per_page=10',
             'class' => ElGordo::class,
+            'spanish' => true,
             'alter_fields' => array(
                 'extra_number' => 'extra_number',
             )
@@ -184,6 +238,7 @@ class ResultJackpot extends Command
         'bonolotto' => array(
             'link' => 'https://www.onelotto.com/lottery-results/spanish-bonoloto/draw-history?last_days=30&page=1&per_page=10',
             'class' => BonoLotto::class,
+            'spanish' => true,
             'alter_fields' => array(
                 'comp' => 'comp',
                 'reint' => 'reint',
@@ -261,7 +316,11 @@ class ResultJackpot extends Command
                     $this->dataInsertResults(array($balls),$update);
                     $this->dataInsertResults($jackpots,$update);
                 }else{
-                    $this->spanish_lotto();
+                    if($provider['spanish']){
+                        $this->spanish_lotto();
+                    }else{
+                        $this->thelotter($crawler);
+                    }
                 }
             }
 
@@ -374,7 +433,72 @@ class ResultJackpot extends Command
         });
         $this->dataInsertResults($balls,false);
     }
+    private function thelotter($crawler){
+        $jackpots = $crawler->filter('script')->each(function ($node) {
+            if(!empty($node->text())){
+                if(preg_match('/TL.tlGlobals/',$node->text())){
+                    preg_match("/\((.*?)\)/s",$node->text(),$content);
+                    if(isset($content[1])){
+                        $data_script = json_decode($content[1]);
+                        $lotteryRef = $data_script->Params->lotteryRef;
+                        $data_string = json_encode(array(
+                            'lotteryRef' => $lotteryRef
+                        ));
+                        $ch = curl_init('https://www.thelotter.com/__Ajax/__AsyncControls.asmx/GetDrawsValueNameList');
+                        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                                'Content-Type: application/json;charset=UTF-8',
+                                'accept-language: en-US,en;q=0.8')
+                        );
 
+                        $result = curl_exec($ch);
+                        $data_days = json_decode($result);
+                        $count = 1;
+                        $results = array();
+                        foreach($data_days->d as $key => $data){
+                            if($count == 11){
+                                break;
+                            }
+                            $date = date("Y-m-d",strtotime(trim(explode("|",$data->DisplayText)[1])));
+                            $crawler = $this->client->request('GET', $this->provider['link']."?DrawNumber=".$data->DrawRef);
+                            $balls = $this->resultBalls($crawler->filter('.draw-result-item')->filter('.results-ball'));
+                            $crawler = new Crawler($crawler->text());
+                            $script_text = explode("new TheLotter\$JqGridControl",$crawler->text());
+                            preg_match("/\[(.*?)\]/s",explode('data : ',$script_text[1])[1],$content);
+                            $prize_json = str_replace("\r\n","",$content[0]);
+
+
+                            preg_match_all("/\'LocalWinningAmount\'\:(.*?)\,/s",$prize_json,$content);
+                            $prize = 0;
+                            foreach($content[1] as $prizes){
+                                if(is_numeric(trim($prizes)) && trim($prizes) > 0){
+                                    $prize += (double)trim($prizes);
+                                }
+                            }
+                            $prize = "€".number_format($prize,2,".",",");
+                            $balls['date'] = $date;
+                            $balls['prize'] = $prize;
+                            $results[] = $balls;
+                            $count++;
+                        }
+                        return $results;
+                    }
+                }
+            }
+        });
+        foreach($jackpots as $jackpot){
+            if(!empty($jackpot)){
+                foreach($jackpot as $key => $value){
+                    if($this->provider['class']::where('date',$value['date'])->count()){
+                        break;
+                    }
+                    $this->provider['class']::create($value);
+                }
+            }
+        }
+    }
     private function resultBalls($jackpot_block){
         $balls = $jackpot_block->each(function ($node) {
             $balls = array();
