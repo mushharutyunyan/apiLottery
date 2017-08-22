@@ -467,19 +467,19 @@ class ResultJackpot extends Command
                             $crawler = new Crawler($crawler->text());
                             $script_text = explode("new TheLotter\$JqGridControl",$crawler->text());
                             preg_match("/\[(.*?)\]/s",explode('data : ',$script_text[1])[1],$content);
-                            $prize_json = str_replace("\r\n","",$content[0]);
-
-
-                            preg_match_all("/\'LocalWinningAmount\'\:(.*?)\,/s",$prize_json,$content);
-                            $prize = 0;
-                            foreach($content[1] as $prizes){
-                                if(is_numeric(trim($prizes)) && trim($prizes) > 0){
-                                    $prize += (double)trim($prizes);
-                                }
-                            }
-                            $prize = "€".number_format($prize,2,".",",");
+//                            $prize_json = str_replace("\r\n","",$content[0]);
+//
+//
+//                            preg_match_all("/\'LocalWinningAmount\'\:(.*?)\,/s",$prize_json,$content);
+//                            $prize = 0;
+//                            foreach($content[1] as $prizes){
+//                                if(is_numeric(trim($prizes)) && trim($prizes) > 0){
+//                                    $prize += (double)trim($prizes);
+//                                }
+//                            }
+//                            $prize = "€".number_format($prize,2,".",",");
                             $balls['date'] = $date;
-                            $balls['prize'] = $prize;
+//                            $balls['prize'] = $prize;
                             $results[] = $balls;
                             $count++;
                         }
@@ -491,10 +491,10 @@ class ResultJackpot extends Command
         foreach($jackpots as $jackpot){
             if(!empty($jackpot)){
                 foreach($jackpot as $key => $value){
-                    if($this->provider['class']::where('date',$value['date'])->count()){
+                    if(!$this->provider['class']::where('date',$value['date'])->count()){
                         break;
                     }
-                    $this->provider['class']::create($value);
+                    $this->provider['class']::update($value);
                 }
             }
         }

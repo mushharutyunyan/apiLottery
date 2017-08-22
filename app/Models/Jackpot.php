@@ -8,6 +8,13 @@ class Jackpot extends Model
 {
     protected $fillable = ['provider','prize','date'];
 
+    public static $updated_providers = array(
+        'FinlandLotto' => FinlandLotto::class,
+        'FinlandVikingLotto' => FinlandVikingLotto::class,
+        'ColumbiaBaLoto' => ColumbiaBaloto::class,
+        'Cash4Life' => Cash4Life::class
+    );
+
     public static $providers = array(
         'PowerBall' => 'https://www.thelotter.com/lottery-tickets/usa-powerball/',
         'MegaMillions' => 'https://www.thelotter.com/lottery-tickets/usa-megamillions/',
@@ -29,7 +36,6 @@ class Jackpot extends Model
         'NewZealandPowerball' => 'https://www.thelotter.com/lottery-tickets/new-zealand-powerball/?player=0',
         'Cash4Life' => 'https://www.thelotter.com/lottery-tickets/cash4life/?player=0',
         'AustraliaSaturdayLotto' => 'https://www.thelotter.com/lottery-tickets/australia-saturday-lotto/?player=0',
-        'FinlandLotto' => 'https://www.thelotter.com/lottery-tickets/finland-lotto/?player=0',
         'FinlandLotto' => 'https://www.thelotter.com/lottery-tickets/finland-lotto/?player=0',
         'SouthAfricaLotto' => 'https://www.thelotter.com/lottery-tickets/south-africa-lotto/?player=0',
         'SouthAfricaPowerball' => 'https://www.thelotter.com/lottery-tickets/south-africa-powerball/?player=0',
