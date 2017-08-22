@@ -494,7 +494,7 @@ class ResultJackpot extends Command
                     if(!$this->provider['class']::where('date',$value['date'])->count()){
                         break;
                     }
-                    $this->provider['class']::update($value);
+                    $this->provider['class']::where('date',$date)->update($value);
                 }
             }
         }
