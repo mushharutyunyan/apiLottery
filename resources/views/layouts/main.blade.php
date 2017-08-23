@@ -15,6 +15,8 @@
     <link href="http://fonts.googleapis.com/css?family=Droid+Serif:400,400italic|Open+Sans:400,300,600,700" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="/assets/css/style.css" type="text/css" />
     <link rel="stylesheet" href="/assets/css/responsive.css" type="text/css" />
+    <link rel="stylesheet" href="/assets/css/jquery-ui.min.css" type="text/css" />
+    <link rel="stylesheet" href="/assets/css/datepicker.css" type="text/css" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <!-- Scripts -->
     <script>
@@ -58,6 +60,7 @@
                     @if(Auth::user()['role'] == \App\Models\User::ADMIN)
                     <li><a href="{{ url('/user') }}">Users</a></li>
                     <li><a href="{{ url('/plan') }}">Change Plan</a></li>
+                    <li><a href="{{ url('/statistic') }}">Statistics</a></li>
                     @endif
                     <li><a href="{{ url('/payments') }}">Payments</a></li>
                     <li><a href="{{ url('/plans') }}">Plans</a></li>
@@ -107,7 +110,12 @@
 <!-- Scripts -->
 <script src="/assets/js/jquery.js"></script>
 <script src="/assets/js/bootstrap.min.js"></script>
+<script src="/assets/js/jquery-ui.min.js"></script>
+{{--<script src="/assets/js/bootstrap-datepicker.js"></script>--}}
 <script>
+    $("#filter_start, #filter_end").datepicker({
+        dateFormat: 'yy-mm-dd'
+    });
     $('.watch-user').on("click",function(){
         $.ajax({
             url: '/user/history',

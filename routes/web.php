@@ -7,6 +7,8 @@ Route::group(['middleware' => 'checkAuth'],function () {
     Route::group(['middleware' => 'admin'],function () {
         Route::resource('/plan', 'PlansController');
         Route::resource('/user', 'UserController');
+        Route::get('/statistic', 'StatisticsController@index');
+        Route::post('/statistic', 'StatisticsController@index');
         Route::post('/user/history', 'UserController@history');
         Route::get('/plan/makeMain/{id}', 'PlansController@makeMain');
     });
