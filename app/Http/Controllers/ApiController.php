@@ -27,7 +27,7 @@ class ApiController extends Controller
         $now = date('Y-m-d H:i:s');
         $providers = Jackpot::$providers;
         foreach($providers as $provider => $link) {
-            $jackpot = Jackpot::where('provider', $provider)->orderBy('date', 'DESC')->first();
+            $jackpot = Jackpot::where('provider', $provider)->orderBy('id', 'DESC')->first();
 //                $countdown = $this->countdown($jackpot->date);
             $data[] = array('n' => $jackpot->provider,
                 'p' => $jackpot->prize,
