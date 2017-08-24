@@ -38,7 +38,7 @@ class ExpandJackpot extends Command
      * @return void
      */
 
-    
+
     public function __construct()
     {
         parent::__construct();
@@ -60,6 +60,7 @@ class ExpandJackpot extends Command
 
 
             $crawler = $client->request('GET', $link);
+            dd("asdasd");
             if($crawler->filter('.sidebar-right')->count()){
                 $current_jackpot = $crawler->filter('.sidebar-right')->children('.current');
                 $current_link = 'https://www.lotto.net'.$current_jackpot->filter('a')->attr('href');
