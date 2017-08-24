@@ -67,13 +67,13 @@ class ExpandJackpot extends Command
                 $current_link = $link;
             }
             $crawler = $client->request('GET', $current_link);
-            dd("asdasd");
             if($crawler->filter('#dLottoSingleLineContainer')->count()){
                 $date = $crawler->filter('#dLottoSingleLineContainer')->attr('data-brand-draw-date');
                 $date = date('Y-m-d H:i:s', strtotime($date));
                 $prize = $crawler->filter('.lotto-prize')->text();
             }else{
                 $canonical_source_content = $crawler->filter('meta[name="canonical_source"]')->attr('content');
+            dd("asdasd");
                 if(!isset(explode('?lotteryid=',$canonical_source_content)[1])){
                     continue;
                 }
