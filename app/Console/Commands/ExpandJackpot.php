@@ -37,6 +37,8 @@ class ExpandJackpot extends Command
      *
      * @return void
      */
+
+    
     public function __construct()
     {
         parent::__construct();
