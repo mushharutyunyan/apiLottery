@@ -72,8 +72,8 @@ class ExpandJackpot extends Command
                 $date = date('Y-m-d H:i:s', strtotime($date));
                 $prize = $crawler->filter('.lotto-prize')->text();
             }else{
+            dd($crawler->filter('meta[name="canonical_source"]'));
                 $canonical_source_content = $crawler->filter('meta[name="canonical_source"]')->attr('content');
-            dd("asdasd");
                 if(!isset(explode('?lotteryid=',$canonical_source_content)[1])){
                     continue;
                 }
