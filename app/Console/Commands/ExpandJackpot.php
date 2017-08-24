@@ -60,7 +60,6 @@ class ExpandJackpot extends Command
 
 
             $crawler = $client->request('GET', $link);
-            dd("asdasd");
             if($crawler->filter('.sidebar-right')->count()){
                 $current_jackpot = $crawler->filter('.sidebar-right')->children('.current');
                 $current_link = 'https://www.lotto.net'.$current_jackpot->filter('a')->attr('href');
@@ -68,6 +67,7 @@ class ExpandJackpot extends Command
                 $current_link = $link;
             }
             $crawler = $client->request('GET', $current_link);
+            dd("asdasd");
             if($crawler->filter('#dLottoSingleLineContainer')->count()){
                 $date = $crawler->filter('#dLottoSingleLineContainer')->attr('data-brand-draw-date');
                 $date = date('Y-m-d H:i:s', strtotime($date));
