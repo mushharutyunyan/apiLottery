@@ -66,7 +66,7 @@ class ExpandJackpot extends Command
             }else{
                 $current_link = $link;
             }
-            $crawler = $client->request('GET', $current_link,["'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'"]);
+            $crawler = $client->request('GET', $current_link);
             if($crawler->filter('#dLottoSingleLineContainer')->count()){
                 $date = $crawler->filter('#dLottoSingleLineContainer')->attr('data-brand-draw-date');
                 $date = date('Y-m-d H:i:s', strtotime($date));
