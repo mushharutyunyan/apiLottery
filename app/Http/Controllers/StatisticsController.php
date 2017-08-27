@@ -33,7 +33,6 @@ class StatisticsController extends Controller
             $start = '';
             $end = '';
         }
-        dd("asdasd");
         $all = 0;
         $user_calls = array();
         $user_exist = array();
@@ -50,6 +49,8 @@ class StatisticsController extends Controller
                 $user_exist[] = $calls->user->id;
             }
         }
+        dd("asdasd");
+
         return view('statistic.index',['user_calls' => $user_calls,'all' => $all,'start' => $start,'end' => $end]);
     }
 }
