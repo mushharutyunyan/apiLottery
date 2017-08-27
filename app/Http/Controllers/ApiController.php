@@ -27,16 +27,15 @@ class ApiController extends Controller
         $now = date('Y-m-d H:i:s');
         $providers = Jackpot::$providers;
         $data = array();
-        echo "<pre>";
         foreach($providers as $provider => $link) {
             $jackpot = Jackpot::where('provider', $provider)->orderBy('id', 'DESC')->first();
 //                $countdown = $this->countdown($jackpot->date);
-            $data[] = array('n' => $jackpot->provider,
-                'p' => $jackpot->prize,
-                'd' => date("F d, Y G:i:s", strtotime($jackpot->date . "+3 hours")));
-            print_R($data);
-        }die;
-        dd($data);
+            if($jackpot->count()){
+                $data[] = array('n' => $jackpot->provider,
+                    'p' => $jackpot->prize,
+                    'd' => date("F d, Y G:i:s", strtotime($jackpot->date . "+3 hours")));
+            }
+        }
         return response()->json($data);
     }
 
