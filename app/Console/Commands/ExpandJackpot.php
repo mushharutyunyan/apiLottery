@@ -73,9 +73,6 @@ class ExpandJackpot extends Command
                 $prize = $crawler->filter('.lotto-prize')->text();
             }else{
                 $canonical_source_content = $crawler->filter('meta[name="canonical_source"]')->attr('content');
-                if($provider == 'FloridaLotto'){
-                    dd($canonical_source_content);
-                }
                 if(!isset(explode('?lotteryid=',$canonical_source_content)[1])){
                     continue;
                 }
