@@ -32,8 +32,8 @@ class ApiController extends Controller
             $data[] = array('n' => $jackpot->provider,
                 'p' => $jackpot->prize,
                 'd' => date("F d, Y G:i:s", strtotime($jackpot->date . "+3 hours")));
+            dd($data);
         }
-        dd($data);
         return response()->json($data);
     }
 
