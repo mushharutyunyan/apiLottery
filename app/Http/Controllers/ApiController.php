@@ -25,6 +25,7 @@ class ApiController extends Controller
     public function jackpot(){
 
         $now = date('Y-m-d H:i:s');
+        dd("asdasd");
         $providers = Jackpot::$providers;
         foreach($providers as $provider => $link) {
             $jackpot = Jackpot::where('provider', $provider)->orderBy('id', 'DESC')->first();
