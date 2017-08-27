@@ -73,6 +73,9 @@ class ExpandJackpot extends Command
                 $prize = $crawler->filter('.lotto-prize')->text();
             }else{
                 $canonical_source_content = $crawler->filter('meta[name="canonical_source"]')->attr('content');
+                if($provider == 'FloridaLotto'){
+                    dd($canonical_source_content);
+                }
                 if(!isset(explode('?lotteryid=',$canonical_source_content)[1])){
                     continue;
                 }
@@ -122,9 +125,7 @@ class ExpandJackpot extends Command
 
                 continue;
             }
-            if($provider == 'FloridaLotto'){
-                dd("asdasd");
-            }
+
             $rounded = date('H:i:s', round(strtotime(date('H:i:s',strtotime($date)))/60)*60);
             $date = date("Y-m-d",strtotime($date))." ".$rounded;
             if($date == $now){
