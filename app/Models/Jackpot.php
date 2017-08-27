@@ -16,7 +16,6 @@ class Jackpot extends Model
     );
 
     public static $providers = array(
-        'LaPrimitiva' => 'https://www.thelotter.com/lottery-tickets/spain-la-primitiva/?player=0',
         'PowerBall' => 'https://www.thelotter.com/lottery-tickets/usa-powerball/',
         'MegaMillions' => 'https://www.thelotter.com/lottery-tickets/usa-megamillions/',
         'EuroMillions' => 'https://www.thelotter.com/lottery-tickets/euromillions',
@@ -28,6 +27,7 @@ class Jackpot extends Model
         'U.K.Lotto' => 'https://www.thelotter.com/lottery-tickets/uk-lotto',
         'Lotto649' => 'https://www.thelotter.com/lottery-tickets/canada-lotto-649',
         'AustraliaPowerBall' => 'https://www.thelotter.com/lottery-tickets/australia-powerball-lotto',
+        'LaPrimitiva' => 'https://www.thelotter.com/lottery-tickets/spain-la-primitiva/?player=0',
         'ElGordo' => 'https://www.thelotter.com/lottery-tickets/spain-el-gordo/?player=0',
         'BonoLoto' => 'https://www.thelotter.com/lottery-tickets/spain-bonoloto/?player=0',
         'FinlandVikingLotto' => 'https://www.thelotter.com/lottery-tickets/finland-viking-lotto/?player=0',
