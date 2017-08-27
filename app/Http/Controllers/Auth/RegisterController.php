@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Auth\Events\Registered;
@@ -81,8 +82,14 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $this->validator($request->all())->validate();
-        event(new Registered($user = $this->create($request->all())));
-        dispatch(new SendVerificationEmail($user));
+        $user = $this->create($request->all());
+
+        Mail::send('email.verification', array('email_token' => base64_encode($user->email)), function($message) use($user)
+        {
+            $message->to($user->email, '')->subject('Email Verification');
+        });
+//        event(new Registered());
+//        dispatch(new SendVerificationEmail($user));
         return view('verification');
     }
 
