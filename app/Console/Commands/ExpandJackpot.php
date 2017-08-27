@@ -122,7 +122,9 @@ class ExpandJackpot extends Command
 
                 continue;
             }
-
+            if($provider == 'FloridaLotto'){
+                dd("asdasd");
+            }
             $rounded = date('H:i:s', round(strtotime(date('H:i:s',strtotime($date)))/60)*60);
             $date = date("Y-m-d",strtotime($date))." ".$rounded;
             if($date == $now){
