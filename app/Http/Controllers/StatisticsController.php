@@ -33,6 +33,7 @@ class StatisticsController extends Controller
             $start = '';
             $end = '';
         }
+        dd("asdasd");
         $all = 0;
         $user_calls = array();
         $user_exist = array();
