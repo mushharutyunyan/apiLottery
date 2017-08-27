@@ -38,6 +38,7 @@ class StatisticsController extends Controller
         $user_exist = array();
         foreach($history as $calls){
             $all += $calls->calls;
+            print_R($calls);die;
             if(in_array($calls->user->id,$user_exist)){
                 $old_calls = $user_calls[$calls->user->id]['calls'];
                 $user_calls[$calls->user->id]['calls'] = $calls->calls + $old_calls;
