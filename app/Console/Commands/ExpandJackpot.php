@@ -124,7 +124,11 @@ class ExpandJackpot extends Command
             }
 
             $rounded = date('H:i:s', round(strtotime(date('H:i:s',strtotime($date)))/60)*60);
-            $date = date("Y-m-d",strtotime($date))." ".$rounded;
+            if($rounded == '00:00:00'){
+                $date = date("Y-m-d",strtotime($date . "+ 1 day"))." ".$rounded;
+            }else{
+                $date = date("Y-m-d",strtotime($date))." ".$rounded;
+            }
             if($date == $now){
                 continue;
             }
