@@ -139,7 +139,8 @@ class ExpandJackpot extends Command
                 Log::info('Expand jackpot update row (provider - '.$provider.' , prize - '.$prize.') date - '.date('Y-m-d H:i:s'));
                 Jackpot::where('id',$old_jackpot->id)->update(array(
                     'prize' => $prize,
-                    'date' => $date
+                    'date' => $date,
+                    'numbers' => ''
                     )
                 );
             }else{
