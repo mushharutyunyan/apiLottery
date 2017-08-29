@@ -114,7 +114,8 @@ class ExpandJackpot extends Command
                         if(!$updated_provider_class::where('date',$date_ended_jackpot)->count()){
                             $updated_provider_class::create(array(
                                 'date' => $date_ended_jackpot,
-                                'prize' => $old_jack->prize
+                                'prize' => $old_jack->prize,
+                                'numbers' => ''
                             ));
                         }
                     }
@@ -140,7 +141,6 @@ class ExpandJackpot extends Command
                 Jackpot::where('id',$old_jackpot->id)->update(array(
                     'prize' => $prize,
                     'date' => $date,
-                    'numbers' => ''
                     )
                 );
             }else{
