@@ -110,7 +110,7 @@ class ExpandJackpot extends Command
                     $old_jack = Jackpot::where('provider',$provider)->where('date','>=',$now)->first();
                     if($old_jack){
                         $updated_provider_class = Jackpot::$updated_providers[$provider];
-                        $date_ended_jackpot = date('Y-m-d',strtotime($now));
+                        $date_ended_jackpot = date('Y-m-d',strtotime($old_jack->date));
                         if(!$updated_provider_class::where('date',$date_ended_jackpot)->count()){
                             $updated_provider_class::create(array(
                                 'date' => $date_ended_jackpot,
