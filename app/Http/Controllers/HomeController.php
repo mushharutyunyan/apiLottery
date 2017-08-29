@@ -53,4 +53,8 @@ class HomeController extends Controller
         $payments = Payment::where('user_id',Auth::user()['id'])->where('status',Payment::SUCCESS)->get();
         return view('payments',['payments' => $payments]);
     }
+
+    public function thankyou(){
+        return view('thankyouexample');
+    }
 }

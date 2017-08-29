@@ -27,4 +27,5 @@ Route::group(['prefix' => 'jackpot','middleware' => ['token.auth']],function () 
     Route::get('/info','ApiController@info');
 });
 Route::get('/verifyemail/{token}', 'Auth\RegisterController@verify');
+Route::get('/thankyou', 'HomeController@thankyou');
 
