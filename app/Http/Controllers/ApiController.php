@@ -48,7 +48,7 @@ class ApiController extends Controller
             'numbers' => 'winning_numbers'
         );
         $providers = ResultJackpot::$providers;
-        $data = $providers[$provider]['class']::orderBy('date','DESC')->take($rows)->get();
+        $data = $providers[$provider]['class']::where('numbers','!=','')->orderBy('date','DESC')->take($rows)->get();
         $result = array();
         $i = 0;
         foreach($data as $key => $value){
@@ -74,7 +74,7 @@ class ApiController extends Controller
         $result = array();
         $j = 0;
         foreach($providers as $key => $provider){
-            $data = $provider['class']::orderBy('date','DESC')->take($rows)->get();
+            $data = $provider['class']::where('numbers','!=','')->orderBy('date','DESC')->take($rows)->get();
             $i = 0;
             $result[$j][$i]['provider'] = $key;
             foreach($data as $key => $value){

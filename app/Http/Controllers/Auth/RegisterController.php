@@ -83,7 +83,7 @@ class RegisterController extends Controller
     {
         $this->validator($request->all())->validate();
         $user = $this->create($request->all());
-
+        
         Mail::send('email.verification', array('email_token' => base64_encode($user->email)), function($message) use($user)
         {
             $message->to($user->email, '')->subject('Email Verification');
