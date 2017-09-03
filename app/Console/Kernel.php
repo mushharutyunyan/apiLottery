@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('command:email-calls')->everyMinute();
-        $schedule->command('command:expand-jackpot')->cron('*/20 * * * *');
+        $schedule->command('command:expand-jackpot')->cron('*/45 * * * *');
         $schedule->command('command:result-jackpot')->cron('0 */12 * * *');
     }
 
