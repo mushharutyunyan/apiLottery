@@ -72,6 +72,7 @@ class ExpandJackpot extends Command
                 $date = date('Y-m-d H:i:s', strtotime($date));
                 $prize = $crawler->filter('.lotto-prize')->text();
             }else{
+                dd($provider);
                 $canonical_source_content = $crawler->filter('meta[name="canonical_source"]')->attr('content');
                 if(!isset(explode('?lotteryid=',$canonical_source_content)[1])){
                     continue;
@@ -123,9 +124,7 @@ class ExpandJackpot extends Command
 
                 continue;
             }
-            if($provider == 'PowerBall'){
-                print_r($prize);die;
-            }
+
             $rounded = date('H:i:s', round(strtotime(date('H:i:s',strtotime($date)))/60)*60);
             if($rounded == '00:00:00'){
                 $date = date("Y-m-d",strtotime($date . "+ 1 day"))." ".$rounded;
