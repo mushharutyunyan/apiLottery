@@ -123,7 +123,9 @@ class ExpandJackpot extends Command
 
                 continue;
             }
-
+            if($provider == 'PowerBall'){
+                print_r($prize);die;
+            }
             $rounded = date('H:i:s', round(strtotime(date('H:i:s',strtotime($date)))/60)*60);
             if($rounded == '00:00:00'){
                 $date = date("Y-m-d",strtotime($date . "+ 1 day"))." ".$rounded;
