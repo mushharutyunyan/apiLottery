@@ -16,7 +16,8 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\ExpandJackpot::class,
         Commands\ResultJackpot::class,
-        Commands\EmailCallsNotification::class
+        Commands\EmailCallsNotification::class,
+        Commands\TheLotterXml::class
     ];
 
     /**
