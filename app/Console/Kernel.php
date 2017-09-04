@@ -31,6 +31,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('command:email-calls')->everyMinute();
         $schedule->command('command:expand-jackpot')->cron('*/45 * * * *');
         $schedule->command('command:result-jackpot')->cron('0 */12 * * *');
+        $schedule->command('command:thelotter')->cron('*/30 * * * *');
     }
 
     /**
