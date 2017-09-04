@@ -60,12 +60,14 @@ class ExpandJackpot extends Command
 
 
             $crawler = $client->request('GET', $link);
+            sleep(rand(3,25));
             if($crawler->filter('.sidebar-right')->count()){
                 $current_jackpot = $crawler->filter('.sidebar-right')->children('.current');
                 $current_link = 'https://www.lotto.net'.$current_jackpot->filter('a')->attr('href');
             }else{
                 $current_link = $link;
             }
+            sleep(rand(1,5));
             $crawler = $client->request('GET', $current_link);
             if($crawler->filter('#dLottoSingleLineContainer')->count()){
                 $date = $crawler->filter('#dLottoSingleLineContainer')->attr('data-brand-draw-date');
@@ -83,6 +85,7 @@ class ExpandJackpot extends Command
                     'lotteryType' => 0,
                     'numberOfLines' => 0
                 ));
+                sleep(rand(5,10));
                 $ch = curl_init('https://www.thelotter.com/__ajax/__play.asmx/getplaymodel');
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);

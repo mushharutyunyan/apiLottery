@@ -272,6 +272,7 @@ class ResultJackpot extends Command
             $j = 0;
             $this->provider = $provider;
             $this->alter_fields = $this->provider['alter_fields'];
+            sleep(rand(1,5));
             if($key == 'irelandlotto'){
                 $this->irelandlotto();
             }elseif($key == 'ontario49'){
@@ -313,6 +314,7 @@ class ResultJackpot extends Command
                         $balls['prize'] = trim($node->filter('.jackpot')->filter('span')->text());
                         return $balls;
                     });
+                    sleep(rand(5,10));
                     $this->dataInsertResults(array($balls),$update);
                     $this->dataInsertResults($jackpots,$update);
                 }else{
@@ -324,13 +326,12 @@ class ResultJackpot extends Command
                 }
             }
 
-
         }
         $memory_size = memory_get_usage();
         print_r($this->convert(memory_get_usage(true)));die;
     }
     private function spanish_lotto(){
-
+        sleep(rand(1,5));
         $ch = curl_init($this->provider['link']);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -376,8 +377,10 @@ class ResultJackpot extends Command
             }
             $this->provider['class']::create($jackpot);
         }
+
     }
     private function irelandlotto(){
+        sleep(rand(1,5));
         $crawler = $this->client->request('GET', $this->provider['link']);
         $balls = $crawler->filter('.matching-draw')->each(function ($node) {
             $numbers = '';
@@ -397,6 +400,7 @@ class ResultJackpot extends Command
         $this->dataInsertResults($balls,false);
     }
     private function ontario(){
+        sleep(rand(1,5));
         $crawler = $this->client->request('GET', $this->provider['link']);
         $balls = $crawler->filter('.moreWinningNumbers')->each(function ($node) {
             $balls = array();
@@ -434,6 +438,7 @@ class ResultJackpot extends Command
         $this->dataInsertResults($balls,false);
     }
     private function thelotter($crawler){
+        sleep(rand(1,5));
         $jackpots = $crawler->filter('script')->each(function ($node) {
             if(!empty($node->text())){
                 if(preg_match('/TL.tlGlobals/',$node->text())){
@@ -444,6 +449,7 @@ class ResultJackpot extends Command
                         $data_string = json_encode(array(
                             'lotteryRef' => $lotteryRef
                         ));
+                        sleep(rand(3,9));
                         $ch = curl_init('https://www.thelotter.com/__Ajax/__AsyncControls.asmx/GetDrawsValueNameList');
                         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
                         curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
@@ -500,6 +506,7 @@ class ResultJackpot extends Command
         }
     }
     private function resultBalls($jackpot_block){
+        sleep(rand(1,5));
         $balls = $jackpot_block->each(function ($node) {
             $balls = array();
             $same_classes = array();
