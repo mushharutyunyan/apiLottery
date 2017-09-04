@@ -84,7 +84,7 @@ class TheLotterXml extends Command
                 $convertPrize = $this->convertPrize($prize_exp[2]);
                 $prize = $prize_exp[0].$prize_exp[1].$convertPrize;
                 $next_draw_date = explode(' GMT',$node->filter('next_draw_close_date')->text());
-                $date = date("Y-m-d H:i:s", strtotime($next_draw_date[0]));
+                $date = date("Y-m-d H:i:s", strtotime(str_replace('/', '-', $next_draw_date[0])));
                 return array(
                     'provider' => $jackpots[$title],
                     'prize' => $prize,
