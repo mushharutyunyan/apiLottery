@@ -108,7 +108,7 @@ class TheLotterXml extends Command
         }elseif($n == 'Billion'){
             return 'B';
         }else{
-            return '';
+            return 'K';
         }
     }
 }
