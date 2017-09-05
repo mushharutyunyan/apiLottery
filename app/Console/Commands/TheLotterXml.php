@@ -92,6 +92,7 @@ class TheLotterXml extends Command
                 );
             }
         });
+        print_r($data);die;
         foreach($data as $key => $value){
             if(!empty($value)){
                 if(!Jackpot::where('provider',$value['provider'])->where('prize',$value['prize'])->where('date',$value['date'])->count()){
