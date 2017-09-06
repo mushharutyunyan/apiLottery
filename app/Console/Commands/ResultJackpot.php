@@ -272,12 +272,13 @@ class ResultJackpot extends Command
             $j = 0;
             $this->provider = $provider;
             $this->alter_fields = $this->provider['alter_fields'];
-            sleep(rand(1,5));
+//            sleep(rand(1,5));
             if($key == 'irelandlotto'){
                 $this->irelandlotto();
             }elseif($key == 'ontario49'){
                 $this->ontario();
             }else{
+
                 $crawler = $this->client->request('GET', $this->provider['link']);
                 if($crawler->filter('.results-big')->count()){
                     $last_jackpot = $crawler->filter('.results-big');
@@ -286,7 +287,7 @@ class ResultJackpot extends Command
                     $update = false;
                     $balls = $this->resultBalls($last_jackpot->filter('.balls')->children('.ball'));
                     $balls['prize'] = trim($last_jackpot->filter('.jackpot')->filter('span')->text());
-                    if(SuperenaLotto::where('date',$date)->count()){
+                    if($provider['class']::where('date',$date)->count()){
                        $last_row = $this->provider['class']::where('date',$date)->first();
                        if(!$this->provider['class']::where('prize','TBC')->count()){
                            if(!$this->provider['class']::where('date',$date)->count()){
@@ -304,6 +305,7 @@ class ResultJackpot extends Command
 
                     $balls['date'] = $date;
 
+
                     $data[$j] = $balls;
                     ++$j;
                     $jackpots = $crawler->filter('.results-med')->each(function ($node) {
@@ -314,7 +316,7 @@ class ResultJackpot extends Command
                         $balls['prize'] = trim($node->filter('.jackpot')->filter('span')->text());
                         return $balls;
                     });
-                    sleep(rand(5,10));
+//                    sleep(rand(5,10));
                     $this->dataInsertResults(array($balls),$update);
                     $this->dataInsertResults($jackpots,$update);
                 }else{
@@ -331,7 +333,7 @@ class ResultJackpot extends Command
         print_r($this->convert(memory_get_usage(true)));die;
     }
     private function spanish_lotto(){
-        sleep(rand(1,5));
+//        sleep(rand(1,5));
         $ch = curl_init($this->provider['link']);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -380,7 +382,7 @@ class ResultJackpot extends Command
 
     }
     private function irelandlotto(){
-        sleep(rand(1,5));
+//        sleep(rand(1,5));
         $crawler = $this->client->request('GET', $this->provider['link']);
         $balls = $crawler->filter('.matching-draw')->each(function ($node) {
             $numbers = '';
@@ -400,7 +402,7 @@ class ResultJackpot extends Command
         $this->dataInsertResults($balls,false);
     }
     private function ontario(){
-        sleep(rand(1,5));
+//        sleep(rand(1,5));
         $crawler = $this->client->request('GET', $this->provider['link']);
         $balls = $crawler->filter('.moreWinningNumbers')->each(function ($node) {
             $balls = array();
@@ -506,7 +508,7 @@ class ResultJackpot extends Command
         }
     }
     private function resultBalls($jackpot_block){
-        sleep(rand(1,5));
+//        sleep(rand(1,5));
         $balls = $jackpot_block->each(function ($node) {
             $balls = array();
             $same_classes = array();
