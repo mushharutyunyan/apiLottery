@@ -2,6 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Cash4Life;
+use App\Models\ColumbiaBaloto;
+use App\Models\FinlandLotto;
+use App\Models\FinlandVikingLotto;
 use Illuminate\Console\Command;
 use Goutte\Client;
 use App\Models\Jackpot;
@@ -56,6 +60,13 @@ class TheLotterXml extends Command
         'SouthAfricaPowerball' => 'South Africa - Powerball',
         'Ontario49' => 'Ontario - Ontario 49',
     );
+
+    private $updated_providers = array(
+        'FinlandLotto' => FinlandLotto::class,
+        'FinlandVikingLotto' => FinlandVikingLotto::class,
+        'ColumbiaBaLoto' => ColumbiaBaloto::class,
+        'Cash4Life' => Cash4Life::class
+    );
     /**
      * Create a new command instance.
      *
@@ -80,9 +91,39 @@ class TheLotterXml extends Command
         $data = $crawler->filter('entry')->each(function ($node) use($jackpots) {
             $title = $node->filter('title')->text();
             if(isset($jackpots[$title])){
+                $jackpot_name = $jackpots[$title];
+                if(isset($this->updated_providers[$jackpot_name])){
+                    $updated_class = $this->updated_providers[$jackpot_name];
+                    $last_draw_date = explode(' GMT',$node->filter('last_draw_date')->text());
+                    $draw_date = date("Y-m-d", strtotime(str_replace('/', '-', $last_draw_date[0])));
+                    $numbers = explode(' + ',$node->filter('last_draw_results')->text());
+                    $extra_number = $numbers[1];
+                    $balls = str_replace(';',' ',$numbers[0]);
+                    $prize_exp = explode(" ",$node->filter('next_draw_jackpot')->text());
+                    $converUpdatedPrize = $this->convertUpdatedPrize($prize_exp[2]);
+                    $prize = $prize_exp[0].$prize_exp[1].$converUpdatedPrize;
+                    if($updated_class::where('date',$draw_date)->count()){
+                        $updated_class::where('date',$draw_date)->update(array(
+                            'prize' => $prize,
+                            'numbers' => $balls,
+                            'extra_number' => $extra_number
+                        ));
+                    }else{
+                        $updated_class::create(array(
+                            'prize' => $prize,
+                            'date' => $draw_date,
+                            'numbers' => $balls,
+                            'extra_number' => $extra_number
+                        ));
+                    }
+                }
                 $prize_exp = explode(' ',$node->filter('next_draw_jackpot')->text());
-                $convertPrize = $this->convertPrize($prize_exp[2]);
-                $prize = $prize_exp[0].$prize_exp[1].$convertPrize;
+                if(isset($prize_exp[2])){
+                    $convertPrize = $this->convertPrize($prize_exp[2]);
+                    $prize = $prize_exp[0].$prize_exp[1].$convertPrize;
+                }else{
+                    $prize = $node->filter('next_draw_jackpot')->text();
+                }
                 $next_draw_date = explode(' GMT',$node->filter('next_draw_close_date')->text());
                 $date = date("Y-m-d H:i:s", strtotime(str_replace('/', '-', $next_draw_date[0])));
                 return array(
@@ -92,7 +133,6 @@ class TheLotterXml extends Command
                 );
             }
         });
-        print_r($data);die;
         foreach($data as $key => $value){
             if(!empty($value)){
                 if(!Jackpot::where('provider',$value['provider'])->where('prize',$value['prize'])->where('date',$value['date'])->count()){
@@ -110,6 +150,15 @@ class TheLotterXml extends Command
             return 'B';
         }else{
             return 'K';
+        }
+    }
+    private function convertUpdatedPrize($n){
+        if($n == 'Million'){
+            return '.000.000';
+        }elseif($n == 'Billion'){
+            return '.000.000.000';
+        }else{
+            return '000';
         }
     }
 }
