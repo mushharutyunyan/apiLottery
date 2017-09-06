@@ -84,7 +84,6 @@ class TheLotterXml extends Command
      */
     public function handle()
     {
-        dd("asdasd");
         Log::info('The Lotter command start '.date("Y-m-d H:i:s"));
         $client = new Client();
         $crawler = $client->request('GET', $this->url);
