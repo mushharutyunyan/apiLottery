@@ -84,6 +84,7 @@ class TheLotterXml extends Command
      */
     public function handle()
     {
+        dd("asdasd");
         Log::info('The Lotter command start '.date("Y-m-d H:i:s"));
         $client = new Client();
         $crawler = $client->request('GET', $this->url);
@@ -99,18 +100,18 @@ class TheLotterXml extends Command
                     $numbers = explode(' + ',$node->filter('last_draw_results')->text());
                     $extra_number = $numbers[1];
                     $balls = str_replace(';',' ',$numbers[0]);
-                    $prize_exp = explode(" ",$node->filter('next_draw_jackpot')->text());
-                    $converUpdatedPrize = $this->convertUpdatedPrize($prize_exp[2]);
-                    $prize = $prize_exp[0].$prize_exp[1].$converUpdatedPrize;
+                    $prize_updated_exp = explode(" ",$node->filter('next_draw_jackpot')->text());
+                    $converUpdatedPrize = $this->convertUpdatedPrize($prize_updated_exp[2]);
+                    $prize_updated = $prize_updated_exp[0].$prize_updated_exp[1].$converUpdatedPrize;
                     if($updated_class::where('date',$draw_date)->count()){
                         $updated_class::where('date',$draw_date)->update(array(
-                            'prize' => $prize,
+                            'prize' => $prize_updated,
                             'numbers' => $balls,
                             'extra_number' => $extra_number
                         ));
                     }else{
                         $updated_class::create(array(
-                            'prize' => $prize,
+                            'prize' => $prize_updated,
                             'date' => $draw_date,
                             'numbers' => $balls,
                             'extra_number' => $extra_number
@@ -118,6 +119,9 @@ class TheLotterXml extends Command
                     }
                 }
                 $prize_exp = explode(' ',$node->filter('next_draw_jackpot')->text());
+                if($jackpots[$title] != 'FinlandVikingLotto'){
+                    print_r($prize_exp);die;
+                }
                 if(isset($prize_exp[2])){
                     $convertPrize = $this->convertPrize($prize_exp[2]);
                     $prize = $prize_exp[0].$prize_exp[1].$convertPrize;
