@@ -97,11 +97,21 @@ class TheLotterXml extends Command
                     $last_draw_date = explode(' GMT',$node->filter('last_draw_date')->text());
                     $draw_date = date("Y-m-d", strtotime(str_replace('/', '-', $last_draw_date[0])));
                     $numbers = explode(' + ',$node->filter('last_draw_results')->text());
-                    $extra_number = $numbers[1];
-                    $balls = str_replace(';',' ',$numbers[0]);
+                    if(isset($numbers[1])){
+                        $extra_number = $numbers[1];
+                        $balls = str_replace(';',' ',$numbers[0]);
+                    }else{
+                        $balls = $numbers[0];
+                        $extra_number = '';
+                    }
                     $prize_updated_exp = explode(" ",$node->filter('next_draw_jackpot')->text());
-                    $converUpdatedPrize = $this->convertUpdatedPrize($prize_updated_exp[2]);
-                    $prize_updated = $prize_updated_exp[0].$prize_updated_exp[1].$converUpdatedPrize;
+                    if(isset($prize_updated_exp[2])){
+                        $converUpdatedPrize = $this->convertUpdatedPrize($prize_updated_exp[2]);
+                        $prize_updated = $prize_updated_exp[0].$prize_updated_exp[1].$converUpdatedPrize;
+                    }else{
+                        $prize_updated = $node->filter('next_draw_jackpot')->text();
+                    }
+                    
                     if($updated_class::where('date',$draw_date)->count()){
                         $updated_class::where('date',$draw_date)->update(array(
                             'prize' => $prize_updated,
