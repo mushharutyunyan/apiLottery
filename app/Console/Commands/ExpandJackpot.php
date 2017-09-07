@@ -59,7 +59,6 @@ class ExpandJackpot extends Command
         $now = date("Y-m-d H:i:s",strtotime(date('Y-m-d H:i').":00"));
         $providers = Jackpot::$providers;
 
-        try{
             foreach($providers as $provider => $link){
                 $crawler = $client->request('GET', $link);
                 sleep(rand(3,25));
@@ -159,10 +158,7 @@ class ExpandJackpot extends Command
                 }
             }
             Log::info('Expand jackpot command end '.date("Y-m-d H:i:s"));
-        }catch (Exception $e){
-            $thelotter = new TheLotterXml();
-            $thelotter->handle();
-        }
+
     }
 
     private function convertPrize($n){
