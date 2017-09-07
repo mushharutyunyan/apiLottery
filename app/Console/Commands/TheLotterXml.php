@@ -61,6 +61,17 @@ class TheLotterXml extends Command
         'Ontario49' => 'Ontario - Ontario 49',
     );
 
+    protected $currencies = array(
+        'CAD' => 'CA$',
+        'AUD' => 'AU$',
+        'COP' => 'COP',
+        'NZD' => 'NZD',
+        'R' => 'R',
+        '£' => '£',
+        '$' => '$',
+        '€' => '€',
+    );
+
     private $updated_providers = array(
         'FinlandLotto' => FinlandLotto::class,
         'FinlandVikingLotto' => FinlandVikingLotto::class,
@@ -107,11 +118,11 @@ class TheLotterXml extends Command
                     $prize_updated_exp = explode(" ",$node->filter('next_draw_jackpot')->text());
                     if(isset($prize_updated_exp[2])){
                         $converUpdatedPrize = $this->convertUpdatedPrize($prize_updated_exp[2]);
-                        $prize_updated = $prize_updated_exp[0].$prize_updated_exp[1].$converUpdatedPrize;
+                        $prize_updated = $this->currencies[$prize_updated_exp[0]].$prize_updated_exp[1].$converUpdatedPrize;
                     }else{
                         $prize_updated = $node->filter('next_draw_jackpot')->text();
                     }
-                    
+
                     if($updated_class::where('date',$draw_date)->count()){
                         $updated_class::where('date',$draw_date)->update(array(
                             'prize' => $prize_updated,
@@ -130,7 +141,7 @@ class TheLotterXml extends Command
                 $prize_exp = explode(' ',$node->filter('next_draw_jackpot')->text());
                 if(isset($prize_exp[2])){
                     $convertPrize = $this->convertPrize($prize_exp[2]);
-                    $prize = $prize_exp[0].$prize_exp[1].$convertPrize;
+                    $prize = $this->currencies[$prize_exp[0]].$prize_exp[1].$convertPrize;
                 }else{
                     $prize = $node->filter('next_draw_jackpot')->text();
                 }
