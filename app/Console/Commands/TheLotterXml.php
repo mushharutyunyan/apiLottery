@@ -118,9 +118,6 @@ class TheLotterXml extends Command
                     }
                 }
                 $prize_exp = explode(' ',$node->filter('next_draw_jackpot')->text());
-                if($jackpots[$title] != 'FinlandVikingLotto'){
-                    print_r($prize_exp);die;
-                }
                 if(isset($prize_exp[2])){
                     $convertPrize = $this->convertPrize($prize_exp[2]);
                     $prize = $prize_exp[0].$prize_exp[1].$convertPrize;
