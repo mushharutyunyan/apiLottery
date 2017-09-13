@@ -22,6 +22,11 @@ use Illuminate\Support\Facades\Auth;
 
 class ApiController extends Controller
 {
+    function __construct()
+    {
+        dd("asdasdasd");
+    }
+
     public function jackpot(){
 
         $now = date('Y-m-d H:i:s');
