@@ -24,7 +24,7 @@ class ApiController extends Controller
 {
     function __construct()
     {
-        dd("asdasdasd");
+//        dd("asdasdasd");
     }
 
     public function jackpot(){
